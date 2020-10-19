@@ -1,6 +1,7 @@
 import * as express from 'express';
-import Controller from 'interfaces/controller.interface';
+import Controller from 'interfaces/controller';
 import 'dotenv/config';
+import errorMiddleware from './middleware/errorHandler';
 
 class App {
     public app: express.Application;
@@ -12,7 +13,7 @@ class App {
         
         this.initializeMiddlewares(middlewares);
         this.initializeControllers(controllers);
-
+        this.initializeErrorHandling();
     }
 
     initializeControllers(controllers: Array<Controller>) {
@@ -26,6 +27,10 @@ class App {
         middlewares.forEach((middleware) => {
             this.app.use(middleware);
         })
+    }
+
+    initializeErrorHandling() {
+        this.app.use(errorMiddleware);
     }
 
     public listen() {
