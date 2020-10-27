@@ -1,27 +1,34 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import UserType from "./userType";
 
-@Entity()
+@Entity({
+    name: "user"
+})
 class User {
-    @PrimaryGeneratedColumn("uuid")
-    public id?: string;
+    @PrimaryGeneratedColumn("uuid", {name: "user_id"})
+    public userId?: string;
 
-    @Column({unique: true})
+    //add user type relation
+    @Column({unique: true, nullable: false})
     public email: string;
 
-    @Column({unique: true})
-    public name: string;
+    @Column({unique: true, nullable: false})
+    public username: string;
 
-    @Column()
+    @Column({name: "first_name", nullable: false})
     public firstName: string;
 
-    @Column()
+    @Column({name: "last_name", nullable: false})
     public lastName: string;
 
-    @Column()
+    @Column({nullable: false})
     public address: string;
 
-    @Column()
+    @Column({nullable: false})
     public password: string;
+
+    @ManyToOne(() => UserType, userType => userType.users)
+    userType: UserType;
 }
 
 export default User;
