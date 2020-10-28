@@ -5,8 +5,8 @@ import User from "./user";
     name: "user_type"
 })
 class UserType {
-    @PrimaryGeneratedColumn("uuid")
-    public userTypeId : string;
+    @PrimaryGeneratedColumn("uuid", {name: "user_type_id"})
+    public id : string;
 
     @Column({name: "int_value", nullable: false})
     public intValue : number;
@@ -15,7 +15,7 @@ class UserType {
     public name : string;
 
     @OneToMany(() => User, user => user.userType)
-    public users : User; 
+    public users : User[]; 
 }
 
 export default UserType;
