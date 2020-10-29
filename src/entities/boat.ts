@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import BoatType from "./boatType";
+import BoatType from "./types/boatType";
 import Comment from "./comment";
 import Port from "./port";
 import Rating from "./rating";

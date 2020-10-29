@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import SupportTicket from "./supportTicket";
+import SupportTicket from "../supportTicket";
 
 
 @Entity({

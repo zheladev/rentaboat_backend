@@ -4,7 +4,7 @@ import Comment from "./comment";
 import Rating from "./rating";
 import Rental from "./rental";
 import SupportTicket from "./supportTicket";
-import UserType from "./userType";
+import UserType from "./types/userType";
 
 @Entity({
     name: "user"

@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import Rental from "./rental";
-import SupportTicketType from "./supportTicketType";
+import SupportTicketType from "./types/supportTicketType";
 import User from "./user";
 
 @Entity({
