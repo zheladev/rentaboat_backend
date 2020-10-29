@@ -8,7 +8,7 @@ const config: ConnectionOptions = {
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
   entities: [
-    __dirname + '/entities/*.ts',
+    __dirname + '/entities/**/*.ts',
   ],
   synchronize: true,
 };

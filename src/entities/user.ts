@@ -1,6 +1,8 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import Boat from "./boat";
+import Chat from "./chat";
 import Comment from "./comment";
+import Message from "./message";
 import Rating from "./rating";
 import Rental from "./rental";
 import SupportTicket from "./supportTicket";
@@ -55,6 +57,15 @@ class User {
 
     @OneToMany(() => Comment, comment => comment.user)
     public comments: Comment[];
+
+    @OneToMany(() => Chat, chat => chat.receiver)
+    public chats: Chat[];
+
+    @OneToMany(() => Chat, chat => chat.creator)
+    public createdChats: Chat[];
+
+    @OneToMany(() => Message, message => message.user)
+    public messages: Message[];
 }
 
 export default User;
