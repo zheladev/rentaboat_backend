@@ -1,5 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import BoatType from "./boatType";
+import Port from "./port";
 import Shipyard from "./shipyard";
 import User from "./user";
 
@@ -40,6 +41,11 @@ class Boat {
 
     @Column({name: "number_of_bathrooms"})
     public numberOfBathrooms: number;
+
+    @ManyToOne(() => Port, port => port.boats)
+    public port: Port;
+
+    
 
     //TODO: add one to many of other entities once they're implemented
 }
