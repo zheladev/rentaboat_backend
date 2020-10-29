@@ -37,11 +37,14 @@ class User {
     @OneToMany(() => Boat, boat => boat.user)
     public boats: Boat[];
 
+    @OneToMany(() => Rental, rental => rental.tenant)
+    public rentals: Rental[];
+
     @OneToMany(() => SupportTicket, supportTicket => supportTicket.issuer)
     public supportTickets: SupportTicket[];
 
-    @OneToMany(() => Rental, rental => rental.tenant)
-    public rentals: Rental[];
+    @OneToMany(() => SupportTicket, supportTicket => supportTicket.assignedTo)
+    public assignedSupportTickets: SupportTicket[];
 }
 
 export default User;

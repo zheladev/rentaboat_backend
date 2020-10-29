@@ -24,6 +24,9 @@ class SupportTicket {
     public rental: Rental;
 
     //TODO: add assigned to relation 
+    @ManyToOne(() => User, user => user.assignedSupportTickets)
+    @JoinColumn({name: "assinged_to"})
+    public assignedTo: User;
 
     @Column()
     public subject: string;
