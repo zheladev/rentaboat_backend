@@ -1,5 +1,7 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import Boat from "./boat";
+import Rental from "./rental";
+import SupportTicket from "./supportTicket";
 import UserType from "./userType";
 
 @Entity({
@@ -8,6 +10,10 @@ import UserType from "./userType";
 class User {
     @PrimaryGeneratedColumn("uuid", {name: "user_id"})
     public id?: string;
+
+    @ManyToOne(() => UserType, userType => userType.users)
+    @JoinColumn({ name: "user_type_id"})
+    userType: UserType;
 
     //add user type relation
     @Column({unique: true, nullable: false})
@@ -28,11 +34,14 @@ class User {
     @Column({nullable: false})
     public password: string;
 
-    @ManyToOne(() => UserType, userType => userType.users)
-    userType: UserType;
-
     @OneToMany(() => Boat, boat => boat.user)
     public boats: Boat[];
+
+    @OneToMany(() => SupportTicket, supportTicket => supportTicket.issuer)
+    public supportTickets: SupportTicket[];
+
+    @OneToMany(() => Rental, rental => rental.tenant)
+    public rentals: Rental[];
 }
 
 export default User;
