@@ -16,6 +16,12 @@ class Rating {
     @JoinColumn({ name: "boat_id" })
     public boat: Boat;
 
+    @Column({
+        name: "created_at",
+        type: "timestamp",
+    })
+    public createdAt: Date;
+
     @Column() //TODO: add 0 to 10 restraint
     public rating: number;
 

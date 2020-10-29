@@ -19,6 +19,12 @@ class Comment {
 
     //TODO: implement subcomments
 
+    @Column({
+        name: "created_at",
+        type: "timestamp",
+    })
+    public createdAt: Date;
+
     @Column()
     public comment: string;
 }
