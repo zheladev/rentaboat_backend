@@ -1,5 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import Boat from "./boat";
+import Comment from "./comment";
+import Rating from "./rating";
 import Rental from "./rental";
 import SupportTicket from "./supportTicket";
 import UserType from "./userType";
@@ -15,7 +17,9 @@ class User {
     @JoinColumn({ name: "user_type_id"})
     userType: UserType;
 
-    //add user type relation
+    @Column({default: false})
+    public isDeleted: boolean;
+
     @Column({unique: true, nullable: false})
     public email: string;
 
@@ -45,6 +49,12 @@ class User {
 
     @OneToMany(() => SupportTicket, supportTicket => supportTicket.assignedTo)
     public assignedSupportTickets: SupportTicket[];
+
+    @OneToMany(() => Rating, comment => comment.user)
+    public ratings: Rating[];
+
+    @OneToMany(() => Comment, comment => comment.user)
+    public comments: Comment[];
 }
 
 export default User;

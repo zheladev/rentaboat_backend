@@ -6,7 +6,7 @@ import User from "./user";
 @Entity()
 class Rental {
 
-    @PrimaryGeneratedColumn("uuid")
+    @PrimaryGeneratedColumn("uuid", { name: "rental_id" })
     public id: string;
 
     @ManyToOne(() => Boat, boat => boat.rentals)

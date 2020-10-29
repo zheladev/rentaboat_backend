@@ -8,7 +8,7 @@ import User from "./user";
 })
 class SupportTicket {
 
-    @PrimaryGeneratedColumn("uuid")
+    @PrimaryGeneratedColumn("uuid", { name: "support_ticket_id" })
     public id: string;
 
     @ManyToOne(() => User, user => user)
@@ -24,9 +24,12 @@ class SupportTicket {
     public rental: Rental;
 
     //TODO: add assigned to relation 
-    @ManyToOne(() => User, user => user.assignedSupportTickets)
+    @ManyToOne(() => User, user => user.assignedSupportTickets, { nullable: true })
     @JoinColumn({name: "assinged_to"})
     public assignedTo: User;
+
+    @Column()
+    public isAssigned: boolean;
 
     @Column()
     public subject: string;

@@ -1,6 +1,8 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import BoatType from "./boatType";
+import Comment from "./comment";
 import Port from "./port";
+import Rating from "./rating";
 import Rental from "./rental";
 import Shipyard from "./shipyard";
 import User from "./user";
@@ -49,6 +51,12 @@ class Boat {
 
     @OneToMany(() => Rental, rental => rental.boat)
     public rentals: Rental[];
+
+    @OneToMany(() => Rating, rating => rating.boat)
+    public ratings: Rating[];
+
+    @OneToMany(() => Comment, comment => comment.boat)
+    public comments: Comment[];
     //TODO: add one to many of other entities once they're implemented
 }
 
