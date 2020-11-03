@@ -1,5 +1,6 @@
 import { IsEmail, IsString } from "class-validator";
 
+//TODO: update
 class CreateUserDto {
     @IsString()
     public name: string;
