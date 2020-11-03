@@ -5,17 +5,23 @@ import User from "../user";
     name: "user_type"
 })
 class UserType {
-    @PrimaryGeneratedColumn("uuid", {name: "user_type_id"})
-    public id : string;
+    @PrimaryGeneratedColumn("uuid", { name: "user_type_id" })
+    public id: string;
 
-    @Column({name: "int_value", nullable: false})
-    public intValue : number;
+    @Column({ name: "int_value", nullable: false })
+    public intValue: number;
 
-    @Column({nullable: false})
-    public name : string;
+    @Column({ nullable: false })
+    public name: string;
+
+    @Column({ nullable: false, name: "is_registrable" })
+    public isRegistrable: boolean;
+
+    @Column({ nullable: false, name: "is_admin" })
+    public isAdmin: boolean;
 
     @OneToMany(() => User, user => user.userType)
-    public users : User[]; 
+    public users: User[];
 }
 
 export default UserType;

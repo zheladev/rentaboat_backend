@@ -1,11 +1,12 @@
 import { getRepository, Repository } from "typeorm";
+import EntityNotFoundException from "../exceptions/EntityNotFoundException";
 
 
 class BaseService<T> {
     protected repository: Repository<T>;
     private dataObjectClass: { new(): T };
-    constructor() {
-        this.repository = getRepository(this.dataObjectClass);
+    constructor(entityClass : { new(): T }) {
+        this.repository = getRepository(entityClass);
     }
 
     public async getAll() {
@@ -13,17 +14,28 @@ class BaseService<T> {
     }
 
     public async getById(id: string) {
-        return await this.repository.findOne(id);
+        const entity = await this.repository.findOne(id);
+        if (!entity) {
+            throw new EntityNotFoundException<T>();
+        }
+        return entity;
     }
 
     public async update(id, data) {
-        return await this.repository.update(id, data);
+        if (!await this.repository.findOne(id)) {
+            throw new EntityNotFoundException<T>();
+        }
+        await this.repository.update(id, data);
+        return this.repository.findOne(id);
     }
 
     //deletes from database
     //TODO: deletion without losing data for record keeping
     public async delete(id) {
-        return await this.repository.delete(id);
+        if (!await this.repository.findOne(id)) {
+            throw new EntityNotFoundException<T>();
+        }
+        await this.repository.delete(id);
     }
 }
 
