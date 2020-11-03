@@ -5,7 +5,7 @@ import loggerMiddleware from './middleware/routeLogger';
 import config from './typeorm-config';
 import { createConnection } from 'typeorm';
 import cookieParser = require('cookie-parser');
-import UserController from './controllers/UserController';
+import UserController from './controllers/user';
 
 
 

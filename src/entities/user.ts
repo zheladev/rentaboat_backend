@@ -19,6 +19,9 @@ class User {
     @JoinColumn({ name: "user_type_id"})
     userType: UserType;
 
+    @Column({default: true})
+    public isActive: boolean;
+
     @Column({default: false})
     public isDeleted: boolean;
 
@@ -37,7 +40,7 @@ class User {
     @Column({nullable: false})
     public address: string;
 
-    @Column({nullable: false})
+    @Column({nullable: false, select: false})
     public password: string;
 
     @OneToMany(() => Boat, boat => boat.user)

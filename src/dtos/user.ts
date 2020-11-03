@@ -1,12 +1,14 @@
 import { IsEmail, IsString } from "class-validator";
 
-//TODO: update
 class CreateUserDto {
     @IsString()
-    public name: string;
+    public userType: string;
 
     @IsEmail()
     public email: string;
+
+    @IsString()
+    public username: string;
    
     @IsString()
     public firstName: string;
