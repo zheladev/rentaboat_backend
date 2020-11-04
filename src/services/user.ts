@@ -21,16 +21,6 @@ class UserService extends BaseService<User> {
         await this.repository.update(id, { isDeleted: true });
     }
 
-    //TODO: create update DTO
-    public async update(id: string, data: User) {
-        if (!await this.repository.findOne(id)) {
-            throw new EntityNotFoundException<User>();
-        }
-        //TODO: findOne and return User or UpdateResult?
-        await this.repository.update(id, data);
-        return await this.repository.findOne(id);
-    }
-
     public async register(userData: CreateUserDto) {
         //TODO: Right now userTypes are inserted manually into database
         //a script to fill the database or a migration will be necessary in the future.

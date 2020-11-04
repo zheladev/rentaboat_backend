@@ -21,16 +21,21 @@ class BaseService<T> {
         return entity;
     }
 
-    public async update(id, data) {
-        if (!await this.repository.findOne(id)) {
+    public async update(id, entityData: Partial<T>) {
+        const entity = await this.repository.findOne(id);
+        if (!entity) {
             throw new EntityNotFoundException<T>();
         }
-        await this.repository.update(id, data);
-        return this.repository.findOne(id);
+
+        Object.keys(entityData).forEach(key => {
+            entity[key] = entityData[key];
+        })
+        await this.repository.save(entity);
+        //fetch entity again to purge unwanted params from response
+        return await this.repository.findOne(id);
     }
 
-    //deletes from database
-    //TODO: deletion without losing data for record keeping
+    //deletes from database, override if logs needed
     public async delete(id) {
         if (!await this.repository.findOne(id)) {
             throw new EntityNotFoundException<T>();
