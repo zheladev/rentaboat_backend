@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import Boat from "./boat";
 import Chat from "./chat";
 import Comment from "./comment";
@@ -7,6 +7,9 @@ import Rating from "./rating";
 import Rental from "./rental";
 import SupportTicket from "./supportTicket";
 import UserType from "./types/userType";
+import * as bcrypt from 'bcrypt';
+
+const BCRYPT_SALT_ROUNDS = 10;
 
 @Entity({
     name: "user"
@@ -19,10 +22,10 @@ class User {
     @JoinColumn({ name: "user_type_id"})
     userType: UserType;
 
-    @Column({default: true})
+    @Column({default: true, name: "is_active"})
     public isActive: boolean;
 
-    @Column({default: false})
+    @Column({default: false, name: "is_deleted"})
     public isDeleted: boolean;
 
     @Column({unique: true, nullable: false})
@@ -69,6 +72,16 @@ class User {
 
     @OneToMany(() => Message, message => message.user)
     public messages: Message[];
+
+    @BeforeInsert()
+    async beforeInsert() {
+        this.password = await bcrypt.hash(this.password, BCRYPT_SALT_ROUNDS);
+    }
+
+    @BeforeUpdate()
+    async beforeUpdate() {
+        this.password = await bcrypt.hash(this.password, BCRYPT_SALT_ROUNDS);
+    }
 }
 
 export default User;

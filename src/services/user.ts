@@ -2,13 +2,10 @@ import { getRepository } from "typeorm";
 import CreateUserDto from "../dtos/user";
 import UserType from "../entities/types/userType";
 import User from "../entities/user";
-import * as bcrypt from 'bcrypt';
 import EmailAlreadyInUseException from "../exceptions/EmailAlreadyInUseException";
 import ForbiddenActionException from "../exceptions/ForbiddenActionException";
 import BaseService from "./baseService";
 import EntityNotFoundException from "../exceptions/EntityNotFoundException";
-
-const SALT_ROUNDS = 10;
 
 class UserService extends BaseService<User> {
     private userTypeRepository = getRepository(UserType);
@@ -53,11 +50,9 @@ class UserService extends BaseService<User> {
         //use postgres error codes instead of procedural checking?
 
         try {
-            const hashedPassword = await bcrypt.hash(userData.password, SALT_ROUNDS);
             const createdUser = await this.repository.create({
                 ...userData,
-                userType: userType,
-                password: hashedPassword
+                userType: userType
             });
             await this.repository.save(createdUser);
             return createdUser;
