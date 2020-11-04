@@ -1,5 +1,6 @@
 import HttpException from "./HttpException";
 
+//TODO: make it generic for all unique key violations
 class EmailAlreadyInUseException extends HttpException {
     email: string;
     constructor(email: string) {

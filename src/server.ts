@@ -6,6 +6,7 @@ import config from './typeorm-config';
 import { createConnection } from 'typeorm';
 import cookieParser = require('cookie-parser');
 import UserController from './controllers/user';
+import AuthenticationController from './controllers/auth';
 
 
 
@@ -19,6 +20,7 @@ import UserController from './controllers/user';
     const app = new App(
         [
             new UserController(),
+            new AuthenticationController(),
         ],
         [
             bodyParser.json(),

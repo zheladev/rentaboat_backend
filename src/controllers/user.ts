@@ -1,16 +1,8 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { getRepository } from "typeorm";
-import * as bcrypt from 'bcrypt';
-import { isExpressionStatement } from "typescript";
-import CreateUserDto from "../dtos/user";
 import User from "../entities/user";
 import Controller from "../interfaces/controller";
-import HttpException from "../exceptions/HttpException";
 import UserService from "../services/user";
-import EntityNotFoundException from "../exceptions/EntityNotFoundException";
 
-
-//TODO: decouple view logic from business logic
 class UserController implements Controller {
     public path = "/users";
     public router = Router();
@@ -25,8 +17,6 @@ class UserController implements Controller {
         this.router.get(`${this.path}/:id`, this.getUserById);
         this.router.patch(`${this.path}/:id`, this.modifyUser);
         this.router.delete(`${this.path}/:id`, this.deleteUser);
-        //this.router.post(this.path, this.createUser);
-       
     }
 
     //TODO: endpoint to query by custom params
@@ -49,16 +39,6 @@ class UserController implements Controller {
             next(error);
         }
     };
-
-    // private createUser = async (request: Request, response: Response, next: NextFunction) => {
-    //     const newUserData: CreateUserDto = request.body;
-    //     try {
-    //         const newUser = await this.userService.register(newUserData);
-    //         response.send(newUser);
-    //     } catch(error) {
-    //         next(error);
-    //     }
-    // };
 
     private modifyUser = async (request: Request, response: Response, next: NextFunction) => {
         const id = request.params.id;
