@@ -25,7 +25,7 @@ class UserController implements Controller {
         this.router.get(`${this.path}/:id`, this.getUserById);
         this.router.patch(`${this.path}/:id`, this.modifyUser);
         this.router.delete(`${this.path}/:id`, this.deleteUser);
-        this.router.post(this.path, this.createUser);
+        //this.router.post(this.path, this.createUser);
        
     }
 
@@ -50,15 +50,15 @@ class UserController implements Controller {
         }
     };
 
-    private createUser = async (request: Request, response: Response, next: NextFunction) => {
-        const newUserData: CreateUserDto = request.body;
-        try {
-            const newUser = await this.userService.register(newUserData);
-            response.send(newUser);
-        } catch(error) {
-            next(error);
-        }
-    };
+    // private createUser = async (request: Request, response: Response, next: NextFunction) => {
+    //     const newUserData: CreateUserDto = request.body;
+    //     try {
+    //         const newUser = await this.userService.register(newUserData);
+    //         response.send(newUser);
+    //     } catch(error) {
+    //         next(error);
+    //     }
+    // };
 
     private modifyUser = async (request: Request, response: Response, next: NextFunction) => {
         const id = request.params.id;
