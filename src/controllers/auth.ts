@@ -1,5 +1,5 @@
 import { NextFunction, Router, Request, Response } from "express";
-import CreateUserDto from "../dtos/user";
+import RegisterDto from "../dtos/register";
 import Controller from "../interfaces/controller";
 import AuthenticationService from "../services/auth";
 
@@ -19,11 +19,16 @@ class AuthenticationController implements Controller {
     }
 
     private logIn = async (request: Request, response: Response, next: NextFunction) => {
-        //TODO
+        try {
+            const token = this.authService.logIn(request.body);
+            //TODO: send jwt cookie
+        } catch(error) {
+            next(error);
+        }
     }
 
     private register = async (request: Request, response: Response, next: NextFunction) => {
-        const newUserData: CreateUserDto = request.body;
+        const newUserData: RegisterDto = request.body;
         try {
             const newUser = await this.authService.register(newUserData);
             response.send(newUser);

@@ -1,6 +1,6 @@
 import { IsEmail, IsString } from "class-validator";
 
-class CreateUserDto {
+class RegisterDto {
     @IsString()
     public userType: string;
 
@@ -23,4 +23,4 @@ class CreateUserDto {
     public password: string;
 }
 
-export default CreateUserDto;
+export default RegisterDto;

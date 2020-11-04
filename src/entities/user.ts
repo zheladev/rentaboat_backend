@@ -82,6 +82,10 @@ class User {
     async beforeUpdate() {
         this.password = await bcrypt.hash(this.password, BCRYPT_SALT_ROUNDS);
     }
+
+    async isValidPassword(password: string) {
+        return bcrypt.compare(password, this.password);
+    }
 }
 
 export default User;
