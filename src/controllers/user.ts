@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
 import User from "../entities/user";
 import Controller from "../interfaces/controller";
+import authMiddleware from "../middleware/auth";
 import UserService from "../services/user";
 
 class UserController implements Controller {
@@ -14,9 +15,10 @@ class UserController implements Controller {
 
     private initializeRoutes() {
         this.router.get(this.path, this.getAllUsers);
-        this.router.get(`${this.path}/:id`, this.getUserById);
-        this.router.patch(`${this.path}/:id`, this.modifyUser);
-        this.router.delete(`${this.path}/:id`, this.deleteUser);
+        this.router.all(`${this.path}/*`, authMiddleware)
+            .get(`${this.path}/:id`, this.getUserById)
+            .patch(`${this.path}/:id`, this.modifyUser)
+            .delete(`${this.path}/:id`, this.deleteUser);
     }
 
     //TODO: endpoint to query by custom params

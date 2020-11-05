@@ -14,8 +14,8 @@ class AuthenticationController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.get(this.path, this.logIn);
-        this.router.post(this.path, this.register);
+        this.router.get(`${this.path}/login`, this.logIn);
+        this.router.post(`${this.path}/register`, this.register);
     }
 
     private logIn = async (request: Request, response: Response, next: NextFunction) => {

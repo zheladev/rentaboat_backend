@@ -7,6 +7,7 @@ import { createConnection } from 'typeorm';
 import cookieParser = require('cookie-parser');
 import UserController from './controllers/user';
 import AuthenticationController from './controllers/auth';
+import authMiddleware from './middleware/auth';
 
 
 

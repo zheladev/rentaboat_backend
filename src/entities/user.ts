@@ -22,10 +22,10 @@ class User {
     @JoinColumn({ name: "user_type_id"})
     userType: UserType;
 
-    @Column({default: true, name: "is_active"})
+    @Column({default: true, name: "is_active", select: false})
     public isActive: boolean;
 
-    @Column({default: false, name: "is_deleted"})
+    @Column({default: false, name: "is_deleted", select: false})
     public isDeleted: boolean;
 
     @Column({unique: true, nullable: false})
@@ -40,7 +40,7 @@ class User {
     @Column({name: "last_name", nullable: false})
     public lastName: string;
 
-    @Column({nullable: false})
+    @Column({nullable: false, select: false})
     public address: string;
 
     @Column({nullable: false, select: false})
@@ -84,7 +84,7 @@ class User {
     }
 
     async isValidPassword(password: string) {
-        return bcrypt.compare(password, this.password);
+        return await bcrypt.compare(password, this.password);
     }
 }
 

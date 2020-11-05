@@ -56,16 +56,18 @@ class AuthenticationService extends UserService {
         }
 
         const user = await this.repository
-            .createQueryBuilder()
-            .select("user.username", username)
+            .createQueryBuilder('user')
             .addSelect("user.password")
+            .where('user.username = :username', {
+                username: username
+            })
             .getOne();
 
         if(!user) {
             throw new EntityNotFoundException<User>();
         }
 
-        if(!user.isValidPassword(password)) {
+        if(! await user.isValidPassword(password)) {
             throw new WrongPasswordException();
         }
 
