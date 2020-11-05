@@ -7,19 +7,59 @@ import EntityNotFoundException from "../exceptions/EntityNotFoundException";
 import ForbiddenActionException from "../exceptions/ForbiddenActionException";
 import MissingParametersException from "../exceptions/MissingParametersException";
 import WrongPasswordException from "../exceptions/WrongPasswordException";
+import DataStoredInToken from "../interfaces/dataStoredInToken";
+import TokenData from "../interfaces/tokenData";
 import UserService from "./user";
+import * as jwt from 'jsonwebtoken';
+import HttpException from "../exceptions/HttpException";
+import EmailAlreadyInUseException from "../exceptions/EmailAlreadyInUseException";
 
 
 class AuthenticationService extends UserService {
     private userTypeRepository = getRepository(UserType);
 
-    //will return token and cookie?
-    public async logIn( {username, password}: LoginDto) {
+    public async logIn( {username, password}: LoginDto): Promise<{cookie: string, user: User}> {
+        const user = await this.validateLoginData(username, password);
+        const tokenData = this.createToken(user);
+        const cookie = this.createCookie(tokenData);
+        return {
+            cookie,
+            user
+        }
+    }
+
+    public async register(userData: RegisterDto): Promise<{cookie: string, user: User}> {
+        try {
+            const userType = await this.userTypeRepository.findOne({ name: userData.userType });
+            await this.validateRegistrationData(userData, userType);
+
+            const createdUser = await this.repository.create({
+                ...userData,
+                userType: userType
+            });
+            await this.repository.save(createdUser);
+            const token = this.createToken(createdUser);
+            const cookie = this.createCookie(token);
+            return {
+                cookie,
+                user: createdUser,
+            }
+        } catch (error) {
+            //TODO
+            throw error;
+        }
+    }
+
+    private async validateLoginData(username: string, password: string) {
         if(!(username && password)) {
             throw new MissingParametersException();
         }
 
-        const user = await this.repository.findOne({username: username});
+        const user = await this.repository
+            .createQueryBuilder()
+            .select("user.username", username)
+            .addSelect("user.password")
+            .getOne();
 
         if(!user) {
             throw new EntityNotFoundException<User>();
@@ -29,41 +69,42 @@ class AuthenticationService extends UserService {
             throw new WrongPasswordException();
         }
 
-        //TODO: user validated, proceed with auth.
+        user.password = undefined;
+        return user;
     }
 
-    public async register(userData: RegisterDto): Promise<User> {
-        //TODO: Right now userTypes are inserted manually into database
-        //a script to fill the database or a migration will be necessary in the future.
-        const userType = await this.userTypeRepository.findOne({ name: userData.userType });
-
+    private async validateRegistrationData(userData: RegisterDto, userType: UserType) {       
         if (!userType || !userType.isRegistrable) {
             throw new ForbiddenActionException("Register non registrable user.");
         }
 
+        //TODO: create username already in use exception
         if (await this.repository.findOne({ username: userData.username})) {
-            //TODO: create username already in use exception
+            throw new HttpException(400, "Username already in use");
         }
 
-        if (await this.repository.findOne({ username: userData.email})) {
-            //TODO: create email already in use exception
-        }
-        //use postgres error codes instead of procedural checking?
-
-        try {
-            const createdUser = await this.repository.create({
-                ...userData,
-                userType: userType
-            });
-            await this.repository.save(createdUser);
-            return createdUser;
-        } catch (error) {
-            //TODO
-            throw error;
+        if (await this.repository.findOne({ email: userData.email})) {
+            throw new EmailAlreadyInUseException(userData.email);
         }
     }
+    
+    private createCookie (tokenData: TokenData) {
+        return `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`;
+    }
 
-    //TODO login: select password as per https://typeorm.io/#/select-query-builder/hidden-columns
+    private createToken(user: User): TokenData {
+        const expiresIn = 60 * 60; // 1 hour
+        const secret = process.env.JWT_SECRET;
+        const dataStoredInToken: DataStoredInToken = {
+          id: user.id,
+          //TODO: store auth level
+        };
+        return {
+          expiresIn,
+          token: jwt.sign(dataStoredInToken, secret, { expiresIn }),
+        };
+      }
+    
 }
 
 export default AuthenticationService;

@@ -20,8 +20,9 @@ class AuthenticationController implements Controller {
 
     private logIn = async (request: Request, response: Response, next: NextFunction) => {
         try {
-            const token = this.authService.logIn(request.body);
-            //TODO: send jwt cookie
+            const {cookie, user} = await this.authService.logIn(request.body);
+            response.setHeader('Set-Cookie', [cookie]);
+            response.send(user);
         } catch(error) {
             next(error);
         }
@@ -30,8 +31,9 @@ class AuthenticationController implements Controller {
     private register = async (request: Request, response: Response, next: NextFunction) => {
         const newUserData: RegisterDto = request.body;
         try {
-            const newUser = await this.authService.register(newUserData);
-            response.send(newUser);
+            const {cookie, user} = await this.authService.register(newUserData);
+            response.setHeader('Set-Cookie', [cookie]);
+            response.send(user);
         } catch(error) {
             next(error);
         }
