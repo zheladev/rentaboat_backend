@@ -55,6 +55,7 @@ class AuthenticationService extends UserService {
             throw new MissingParametersException();
         }
 
+        //TODO: Sanitize!!!!!
         const user = await this.repository
             .createQueryBuilder('user')
             .addSelect("user.password")

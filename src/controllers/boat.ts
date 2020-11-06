@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
+import CreateBoatDto from "../dtos/createBoat";
 import User from "../entities/user";
 import Controller from "../interfaces/controller";
 import RequestWithUser from "../interfaces/requestWithuser";
@@ -46,10 +47,11 @@ class BoatController implements Controller {
 
     private modifyBoat = async (request: RequestWithUser, response: Response, next: NextFunction) => {
         const id = request.params.id;
-        //TODO: modify boat DTO
-        const boatData = request.body;
+        const user = request.user;
+
+        const boatData: Partial<CreateBoatDto> = request.body;
         try {
-            const updatedBoat = await this.boatService.update(id, boatData);
+            const updatedBoat = await this.boatService.updateWithUser(id, boatData, user);
             response.send(updatedBoat);
         } catch (error) {
             next(error);
@@ -68,13 +70,14 @@ class BoatController implements Controller {
 
     private createBoat = async (request: RequestWithUser, response: Response, next: NextFunction) => {
         const user: User = request.user;
-        const boatData = request.body;
+        const boatData: CreateBoatDto = request.body;
         try {
-            //TODO: add user
-            const createdBoat = await this.boatService.create(boatData);
+            const createdBoat = await this.boatService.create(boatData, user);
             response.send(createdBoat);
         } catch (error) {
             next(error);
         }
     }
 }
+
+export default BoatController;
