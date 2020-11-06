@@ -1,16 +1,9 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { getRepository } from "typeorm";
-import * as bcrypt from 'bcrypt';
-import { isExpressionStatement } from "typescript";
-import CreateUserDto from "../dtos/user";
 import User from "../entities/user";
 import Controller from "../interfaces/controller";
-import HttpException from "../exceptions/HttpException";
+import authMiddleware from "../middleware/auth";
 import UserService from "../services/user";
-import EntityNotFoundException from "../exceptions/EntityNotFoundException";
 
-
-//TODO: decouple view logic from business logic
 class UserController implements Controller {
     public path = "/users";
     public router = Router();
@@ -22,11 +15,10 @@ class UserController implements Controller {
 
     private initializeRoutes() {
         this.router.get(this.path, this.getAllUsers);
-        this.router.get(`${this.path}/:id`, this.getUserById);
-        this.router.patch(`${this.path}/:id`, this.modifyUser);
-        this.router.delete(`${this.path}/:id`, this.deleteUser);
-        this.router.post(this.path, this.createUser);
-       
+        this.router.all(`${this.path}/*`, authMiddleware)
+            .get(`${this.path}/:id`, this.getUserById)
+            .patch(`${this.path}/:id`, this.modifyUser)
+            .delete(`${this.path}/:id`, this.deleteUser);
     }
 
     //TODO: endpoint to query by custom params
@@ -45,16 +37,6 @@ class UserController implements Controller {
         try {
             const user = await this.userService.getById(id);
             response.send(user);
-        } catch(error) {
-            next(error);
-        }
-    };
-
-    private createUser = async (request: Request, response: Response, next: NextFunction) => {
-        const newUserData: CreateUserDto = request.body;
-        try {
-            const newUser = await this.userService.register(newUserData);
-            response.send(newUser);
         } catch(error) {
             next(error);
         }
