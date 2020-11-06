@@ -42,6 +42,10 @@ class BaseService<T> {
         }
         await this.repository.delete(id);
     }
+
+    public async create(data: Partial<T>) {
+        //TODO
+    }
 }
 
 export default BaseService;
