@@ -15,8 +15,8 @@ class UserController implements Controller {
 
     private initializeRoutes() {
         this.router.get(this.path, this.getAllUsers);
+        this.router.get(`${this.path}/:id`, this.getUserById);
         this.router.all(`${this.path}/*`, authMiddleware)
-            .get(`${this.path}/:id`, this.getUserById)
             .patch(`${this.path}/:id`, this.modifyUser)
             .delete(`${this.path}/:id`, this.deleteUser);
     }
