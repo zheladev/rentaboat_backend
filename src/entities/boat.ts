@@ -30,11 +30,10 @@ class Boat {
     @Column()
     public description: string;
 
-    //add restraints
-    @Column({name: "price_per_day"})
+    @Column({name: "price_per_day", type: "decimal", scale: 2, precision: 20 })
     public pricePerDay: number;
 
-    @Column()
+    @Column({type: "decimal", scale: 2, precision: 10})
     public length: number;
 
     @Column()

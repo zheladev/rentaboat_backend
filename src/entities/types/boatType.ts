@@ -8,6 +8,9 @@ class BoatType {
     @PrimaryGeneratedColumn("uuid", { name: "boat_type_id" })
     public id: string;
 
+    @Column({ name: "int_value", nullable: false })
+    public intValue: number;
+
     @Column({ nullable: false })
     public name: string;
 

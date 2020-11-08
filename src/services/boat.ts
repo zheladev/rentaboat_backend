@@ -22,13 +22,13 @@ class BoatService extends BaseService<Boat> {
     }
 
     public async updateWithUser(id: string, boatData: Partial<CreateBoatDto>, user: User) {
-        const boat = await this.repository.findOne({id: id});
+        const boat = await this.repository.findOne({id: id}, {relations: ["user"]});
 
-        if(!boat) {
+        if(boat === undefined) {
             throw new EntityNotFoundException<Boat>();
         }
 
-        if (boat.user.id === user.id || user.userType.intValue <= 1) {
+        if (!(boat.user.id === user.id || user.userType.intValue <= 1)) {
             throw new ForbiddenActionException("Modify boat");
         }
 
@@ -40,13 +40,7 @@ class BoatService extends BaseService<Boat> {
         const { shipyard, boatType, port } : BoatFKs = boatData;
         const lowercaseShipyard = shipyard.toLowerCase();
 
-        let shipyardEntity = await this.shipyardRepository.findOne({ name: lowercaseShipyard });
-
-        if (!shipyardEntity) {
-            shipyardEntity = await this.shipyardRepository.create({
-                name: lowercaseShipyard
-            })
-        }
+        const shipyardEntity = await this.getShipyardEntity(lowercaseShipyard);
         
         const boatTypeEntity = await this.boatTypeRepository.findOne({ name: boatType });
 
@@ -64,6 +58,7 @@ class BoatService extends BaseService<Boat> {
             user: user,
         });
 
+        await this.repository.save(createdBoat);
         return createdBoat;
     }
 
@@ -72,6 +67,19 @@ class BoatService extends BaseService<Boat> {
             throw new EntityNotFoundException<Boat>();
         }
         await this.repository.update(id, { isDeleted: true });
+    }
+
+    private async getShipyardEntity(shipyard: string) {
+        let shipyardEntity = await this.shipyardRepository.findOne({ name: shipyard });
+
+        if (!shipyardEntity) {
+            shipyardEntity = await this.shipyardRepository.create({
+                name: shipyard,
+            })
+            await this.shipyardRepository.save(shipyardEntity);
+        }
+
+        return shipyardEntity;
     }
 }
 

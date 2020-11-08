@@ -19,10 +19,10 @@ class BoatController implements Controller {
     private initializeRoutes() {
         this.router.get(this.path, this.getAllBoats);
         this.router.get(`${this.path}/:id`, this.getBoatById);
+        this.router.post(`${this.path}`, authMiddleware, this.createBoat);
         this.router.all(`${this.path}/*`, authMiddleware)
-            .post(`${this.path}`, this.createBoat)
             .patch(`${this.path}/:id`, this.modifyBoat)
-            .delete(`${this.path}/:id`, this.deleteBoat);
+            .delete(`${this.path}/:id`, this.deleteBoat)
     }
     
     //TODO: endpoint to query by custom params
@@ -50,7 +50,7 @@ class BoatController implements Controller {
     private modifyBoat = async (request: RequestWithUser, response: Response, next: NextFunction) => {
         const id = request.params.id;
         const user = request.user;
-
+        
         const boatData: Partial<CreateBoatDto> = request.body;
         try {
             const updatedBoat = await this.boatService.updateWithUser(id, boatData, user);
