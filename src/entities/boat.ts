@@ -40,6 +40,9 @@ class Boat {
     @Column()
     public model: string;
 
+    @Column({default: false, name: "is_deleted", select: false})
+    public isDeleted: boolean;
+
     @Column({name: "passenger_capacity"})
     public passengerCapacity: number;
 

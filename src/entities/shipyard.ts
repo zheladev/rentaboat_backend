@@ -7,7 +7,7 @@ class Shipyard {
     @PrimaryGeneratedColumn("uuid", { name: "shipyard_id" })
     public id: string;
 
-    @Column({nullable: false})
+    @Column({nullable: false, unique: true})
     public name: string;
 
     @OneToMany(() => Boat, boat => boat.shipyard)
