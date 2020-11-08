@@ -21,8 +21,6 @@ class UserController implements Controller {
             .delete(`${this.path}/:id`, this.deleteUser);
     }
 
-    //TODO: endpoint to query by custom params
-
     private getAllUsers = async (request: Request, response: Response, next: NextFunction) => {
         try {
             const users = await this.userService.getAll();

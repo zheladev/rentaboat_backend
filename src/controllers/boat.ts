@@ -24,6 +24,8 @@ class BoatController implements Controller {
             .patch(`${this.path}/:id`, this.modifyBoat)
             .delete(`${this.path}/:id`, this.deleteBoat);
     }
+    
+    //TODO: endpoint to query by custom params
 
     private getAllBoats = async (request: Request, response: Response, next: NextFunction) => {
         try {
