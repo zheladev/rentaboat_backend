@@ -17,11 +17,11 @@ class Rental {
     @JoinColumn({name: "tenant_id"})
     public tenant: User;
 
-    @Column({name: "start_date"})
+    @Column({name: "start_date", type: "timestamp", unique: true})
     public startDate: Date;
 
-    @Column({name: "end_date"})
-    public endDate: Date;
+    @Column({name: "duration_in_days", type: "interval"})
+    public durationInDays: number;
 
     @Column()
     public comment: string;

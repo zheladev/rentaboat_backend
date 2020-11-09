@@ -81,6 +81,14 @@ class BoatService extends BaseService<Boat> {
 
         return shipyardEntity;
     }
+
+    public async getByUserId(userId: string) {
+        const entity = await this.repository.find({where: {user: userId}});
+        if (!entity) {
+            throw new EntityNotFoundException<Boat>();
+        }
+        return entity;
+    }
 }
 
 export default BoatService;
