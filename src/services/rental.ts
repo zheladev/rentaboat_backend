@@ -22,6 +22,36 @@ class RentalService extends BaseService<Rental> {
         return rentals;
     }   
 
+    public async getByTenantId(userId: string, user: User) {
+        if(!(userId === user.id || user.userType.intValue <= 1)) {
+            throw new ForbiddenActionException("Access tenant rentals");
+        }
+
+        const rentals = await this.repository.find({where: {tenant: userId}});
+
+        return rentals;
+    }
+
+    public async getByUserId(userId: string, user: User) {
+        if(!(userId === user.id || user.userType.intValue <= 1)) {
+            throw new ForbiddenActionException("Access renter rentals");
+        }
+
+        //TODO: test, probably doesn't work
+        const rentals = await this.repository.find({
+            relations: ["boat", "boat.user"],
+            where: {
+                boat: {
+                    user: {
+                        id: userId
+                    }
+                }
+            }
+        });
+
+        return rentals;
+    }
+
     public async create(rentalData: CreateRentalDTO, user: User) {
         const { boatId } = rentalData;
 
@@ -33,8 +63,7 @@ class RentalService extends BaseService<Rental> {
             throw new ForbiddenActionException("Duplicate date");
         }
 
-
-        
+        //create
     }
 
     private async checkIfValidRentalDate(rentalData: CreateRentalDTO, rentals: Rental[]) : Promise<boolean> {
