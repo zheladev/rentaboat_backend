@@ -21,7 +21,7 @@ class Rental {
     public startDate: Date;
 
     @Column({name: "duration_in_days", type: "interval"})
-    public durationInDays: number;
+    public durationInDays: string;
 
     @Column()
     public comment: string;

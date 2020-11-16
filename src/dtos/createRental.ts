@@ -5,8 +5,8 @@ class CreateRentalDTO {
     @IsDate()
     public startDate: Date;
 
-    @IsNumber()
-    public durationInDays: number;
+    @IsString()
+    public durationInDays: string;
 
     @IsString()
     public comment?: string;

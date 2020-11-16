@@ -14,7 +14,7 @@ class RentalService extends BaseService<Rental> {
     }
 
     public async getByBoatId(boatId: string) {
-        const rentals = await this.repository.find({where: {boat: boatId}});
+        const rentals = await this.repository.find({where: {boat: boatId}, relations: ["tenant"]});
         if(rentals.length < 1) {
             throw new EntityNotFoundException<Rental>();
         }
@@ -37,7 +37,7 @@ class RentalService extends BaseService<Rental> {
             throw new ForbiddenActionException("Access renter rentals");
         }
 
-        //TODO: test, probably doesn't work
+        //TODO: fix, doesn't work
         const rentals = await this.repository.find({
             relations: ["boat", "boat.user"],
             where: {
@@ -55,7 +55,7 @@ class RentalService extends BaseService<Rental> {
     public async create(rentalData: CreateRentalDTO, user: User) {
         const { boatId } = rentalData;
 
-        const boat = await this.boatRepository.findOne(boatId, { relations: ["rental"]});
+        const boat = await this.boatRepository.findOne(boatId, { relations: ["rentals"]});
 
         const boatRentals = boat.rentals.map((rental) => rental);
 
@@ -63,7 +63,13 @@ class RentalService extends BaseService<Rental> {
             throw new ForbiddenActionException("Duplicate date");
         }
 
-        //create
+        const createdRental = await this.repository.create({
+            ...rentalData,
+            tenant: user,
+        })
+        await this.repository.save(createdRental);
+
+        return await this.repository.findOne(createdRental.id);
     }
 
     private async checkIfValidRentalDate(rentalData: CreateRentalDTO, rentals: Rental[]) : Promise<boolean> {
