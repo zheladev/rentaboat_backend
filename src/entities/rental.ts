@@ -1,9 +1,14 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 import Boat from "./boat";
 import SupportTicket from "./supportTicket";
 import User from "./user";
 
+export type PostgresTimeInterval = {
+    days: number
+}
+
 @Entity()
+@Unique(["boat", "startDate"])
 class Rental {
 
     @PrimaryGeneratedColumn("uuid", { name: "rental_id" })
@@ -17,11 +22,11 @@ class Rental {
     @JoinColumn({name: "tenant_id"})
     public tenant: User;
 
-    @Column({name: "start_date", type: "timestamp", unique: true})
+    @Column({name: "start_date", type: "timestamp"})
     public startDate: Date;
 
     @Column({name: "duration_in_days", type: "interval"})
-    public durationInDays: string;
+    public durationInDays: string | PostgresTimeInterval;
 
     @Column()
     public comment: string;

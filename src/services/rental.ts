@@ -1,7 +1,7 @@
-import { getRepository } from "typeorm";
+import { Between, getRepository } from "typeorm";
 import CreateRentalDTO from "../dtos/createRental";
 import Boat from "../entities/boat";
-import Rental from "../entities/rental";
+import Rental, { PostgresTimeInterval } from "../entities/rental";
 import User from "../entities/user";
 import EntityNotFoundException from "../exceptions/EntityNotFoundException";
 import ForbiddenActionException from "../exceptions/ForbiddenActionException";
@@ -59,13 +59,14 @@ class RentalService extends BaseService<Rental> {
 
         const boatRentals = boat.rentals.map((rental) => rental);
 
-        if(!this.checkIfValidRentalDate(rentalData, boatRentals)) {
+        if(! await this.checkIfValidRentalDate(rentalData, boatRentals)) {
             throw new ForbiddenActionException("Duplicate date");
         }
 
         const createdRental = await this.repository.create({
             ...rentalData,
             tenant: user,
+            boat: boat,
         })
         await this.repository.save(createdRental);
 
@@ -74,16 +75,43 @@ class RentalService extends BaseService<Rental> {
 
     private async checkIfValidRentalDate(rentalData: CreateRentalDTO, rentals: Rental[]) : Promise<boolean> {
         let isValid = true;
+        const date : Date = new Date(rentalData.startDate);
+        const dateFilter = this.filterByDateInterval(date);
 
-        if(await this.repository.findOne({ where: { boat: rentalData.boatId, startDate: rentalData.startDate}}) !== undefined) {
-            isValid = false;
-        }
+        const endDate : Date = new Date(date);
+        endDate.setDate(date.getDate() + this.getDaysFromPostgresInterval(rentalData.durationInDays));
 
-        if (isValid) {
-            
-        }
+        //check if there are rentals starting before it that collude in days rented
+        const rental = await this.repository.findOne({ 
+            where: { 
+                boat: rentalData.boatId, 
+                startDate: Between(date, endDate)
+            }
+        });
+
+        isValid = rental === undefined && rentals.filter(dateFilter).length === 0;
 
         return isValid;
+    }
+
+    private getDaysFromPostgresInterval(interval: string) {
+        const daysEndIdx: number = interval.indexOf('D');
+        let daysStartIdx: number = 1;
+
+        for (let i = daysEndIdx -1; i > 0; i--) {
+            if (interval.charAt(i) === 'W' || interval.charAt(i) === 'M' || interval.charAt(i) === 'Y') {
+                daysStartIdx = i+1;
+            }
+        }
+
+        return Number(interval.substring(daysStartIdx, daysEndIdx));
+    }
+
+    private filterByDateInterval = (date: Date) => (r: Rental) : boolean => {
+        const from = new Date(r.startDate);
+        const to = new Date(r.startDate);
+        to.setDate(from.getDate() + Number((r.durationInDays as PostgresTimeInterval).days));
+        return date > from && date < to;
     }
 }
 
