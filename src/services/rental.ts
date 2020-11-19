@@ -33,14 +33,10 @@ class RentalService extends BaseService<Rental> {
     }
 
     public async getByUserId(userId: string, user: User) {
-        console.log(user)
         if(!(userId === user.id || user.userType.intValue <= 1)) {
             throw new ForbiddenActionException("Access renter rentals");
         }
 
-        console.log(userId)
-
-        //TODO: fix, doesn't work
         const rentals = await this.repository
             .createQueryBuilder('rental')
             .leftJoinAndSelect('rental.boat', 'boat')
