@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { create } from "ts-node";
 import CreateRentalDTO from "../dtos/createRental";
+import Rental from "../entities/rental";
 import User from "../entities/user";
 import Controller from "../interfaces/controller";
 import RequestWithUser from "../interfaces/requestWithuser";
@@ -82,16 +83,20 @@ class RentalController implements Controller {
     private modifyRental = async (request: RequestWithUser, response: Response, next: NextFunction) => {
         const id = request.params.id;
         const user: User = request.user;
+        const rentalData: Partial<Rental> = request.body;
         try {
-            //TODO: handle modification of rental
+            const modifiedRental = await this.rentalService.update(id, rentalData);
+            response.send(modifiedRental);
         } catch (error) {
             next(error)
         }
     }
 
     private deleteRental = async (request: RequestWithUser, response: Response, next: NextFunction) => {
+        const id = request.params.id;
         try {
-        //TODO: handle deletion of rental
+        const deletedRental = await this.rentalService.delete(id);
+        response.send(deletedRental);
         } catch (error) {
             next(error)
         }
