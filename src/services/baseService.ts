@@ -14,7 +14,7 @@ class BaseService<T> {
     }
 
     public async getById(id: string) {
-        const entity = await this.repository.findOne(id);
+        const entity = await this.repository.findOne();
         if (!entity) {
             throw new EntityNotFoundException<T>();
         }

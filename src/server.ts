@@ -8,6 +8,7 @@ import cookieParser = require('cookie-parser');
 import UserController from './controllers/user';
 import AuthenticationController from './controllers/auth';
 import BoatController from './controllers/boat';
+import RentalController from './controllers/rental';
 
 
 
@@ -23,6 +24,7 @@ import BoatController from './controllers/boat';
             new UserController(),
             new AuthenticationController(),
             new BoatController(),
+            new RentalController(),
         ],
         [
             bodyParser.json(),
