@@ -1,4 +1,4 @@
-import { Between, getRepository } from "typeorm";
+import { Between, getRepository, SelectQueryBuilder } from "typeorm";
 import CreateRentalDTO from "../dtos/createRental";
 import Boat from "../entities/boat";
 import Rental, { PostgresTimeInterval } from "../entities/rental";
@@ -33,21 +33,20 @@ class RentalService extends BaseService<Rental> {
     }
 
     public async getByUserId(userId: string, user: User) {
+        console.log(user)
         if(!(userId === user.id || user.userType.intValue <= 1)) {
             throw new ForbiddenActionException("Access renter rentals");
         }
 
+        console.log(userId)
+
         //TODO: fix, doesn't work
-        const rentals = await this.repository.find({
-            relations: ["boat", "boat.user"],
-            where: {
-                boat: {
-                    user: {
-                        id: userId
-                    }
-                }
-            }
-        });
+        const rentals = await this.repository
+            .createQueryBuilder('rental')
+            .leftJoinAndSelect('rental.boat', 'boat')
+            .leftJoinAndSelect('boat.user', 'user')
+            .where('user.id=:id', {id: userId})
+            .getMany();
 
         return rentals;
     }
@@ -81,7 +80,6 @@ class RentalService extends BaseService<Rental> {
         const endDate : Date = new Date(date);
         endDate.setDate(date.getDate() + this.getDaysFromPostgresInterval(rentalData.durationInDays));
 
-        //check if there are rentals starting before it that collude in days rented
         const rental = await this.repository.findOne({ 
             where: { 
                 boat: rentalData.boatId, 

@@ -16,7 +16,7 @@ async function authMiddleware(request: RequestWithUser, response: Response, next
     try {
       const verificationResponse = jwt.verify(cookies.Authorization, secret) as DataStoredInToken;
       const id = verificationResponse.id;
-      const user = await userRepository.findOne(id);
+      const user = await userRepository.findOne(id, {relations: ["userType"]});
       if (user) {
         request.user = user;
         next();
