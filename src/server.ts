@@ -9,6 +9,7 @@ import UserController from './controllers/user';
 import AuthenticationController from './controllers/auth';
 import BoatController from './controllers/boat';
 import RentalController from './controllers/rental';
+import BoatTypeController from './controllers/boatType';
 
 
 
@@ -25,6 +26,7 @@ import RentalController from './controllers/rental';
             new AuthenticationController(),
             new BoatController(),
             new RentalController(),
+            new BoatTypeController(),
         ],
         [
             bodyParser.json(),
