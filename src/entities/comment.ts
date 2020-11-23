@@ -17,8 +17,6 @@ class Comment {
     @JoinColumn({ name: "boat_id" })
     public boat: Boat;
 
-    //TODO: implement subcomments
-
     @CreateDateColumn({
         name: "created_at",
         type: "timestamp",

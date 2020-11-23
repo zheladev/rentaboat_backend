@@ -1,6 +1,6 @@
 import { getRepository, Repository } from "typeorm";
 import CreateChatDTO from "../dtos/createChat";
-import PostMessageDTO from "../dtos/PostMessage";
+import PostMessageDTO from "../dtos/postMessage";
 import Chat from "../entities/chat";
 import Message from "../entities/message";
 import User from "../entities/user";

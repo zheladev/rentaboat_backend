@@ -1,7 +1,11 @@
-import { getRepository } from "typeorm";
+import { Entity, getRepository } from "typeorm";
 import CreateBoatDto from "../dtos/createBoat";
+import PostCommentDTO from "../dtos/postComment";
+import PostRatingDTO from "../dtos/postRating";
 import Boat from "../entities/boat";
+import Comment from "../entities/comment";
 import Port from "../entities/port";
+import Rating from "../entities/rating";
 import Shipyard from "../entities/shipyard";
 import BoatType from "../entities/types/boatType";
 import User from "../entities/user";
@@ -16,6 +20,8 @@ class BoatService extends BaseService<Boat> {
     private shipyardRepository = getRepository(Shipyard);
     private portRepository = getRepository(Port);
     private boatTypeRepository = getRepository(BoatType);
+    private commentRepository = getRepository(Comment);
+    private ratingRepository = getRepository(Rating);
 
     constructor() {
         super(Boat);
@@ -69,6 +75,59 @@ class BoatService extends BaseService<Boat> {
         await this.repository.update(id, { isDeleted: true });
     }
 
+    public async getById(id: string) {
+        const boat = this.repository.findOne(id, {relations: ["ratings", "comments"]});
+        if (!boat) {
+            throw new EntityNotFoundException<Boat>();
+        }
+
+        return boat;
+    }
+
+    public async getByUserId(userId: string) {
+        const entity = await this.repository.find({where: {user: userId}});
+        if (!entity) {
+            throw new EntityNotFoundException<Boat>();
+        }
+        return entity;
+    }
+
+    //TODO: add endpoint
+    public async postComment(boatId: string, commentData: PostCommentDTO, user: User) {
+        const boat = await this.repository.findOne(boatId);
+        
+        if(!boat) {
+            throw new EntityNotFoundException<Boat>();
+        }
+
+        const createdComment = await this.commentRepository.create({
+            ...commentData,
+            boat: boat,
+            user: user
+        });
+        await this.commentRepository.save(createdComment);
+
+        return this.commentRepository.findOne(createdComment.id);
+    }
+
+    //TODO: add endpoint
+    public async postRating(boatId: string, ratingData: PostRatingDTO, user: User) {
+        const boat = await this.repository.findOne(boatId);
+        
+        if(!boat) {
+            throw new EntityNotFoundException<Boat>();
+        }
+
+        const createdRating = await this.ratingRepository.create({
+            ...ratingData,
+            boat: boat,
+            user: user
+        });
+        await this.ratingRepository.save(createdRating);
+
+        return this.ratingRepository.findOne(createdRating.id);
+    }
+
     private async getShipyardEntity(shipyard: string) {
         let shipyardEntity = await this.shipyardRepository.findOne({ name: shipyard });
 
@@ -80,14 +139,6 @@ class BoatService extends BaseService<Boat> {
         }
 
         return shipyardEntity;
-    }
-
-    public async getByUserId(userId: string) {
-        const entity = await this.repository.find({where: {user: userId}});
-        if (!entity) {
-            throw new EntityNotFoundException<Boat>();
-        }
-        return entity;
     }
 }
 

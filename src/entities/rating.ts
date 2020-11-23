@@ -1,8 +1,9 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
 import Boat from "./boat";
 import User from "./user";
 
 @Entity()
+@Unique(["user", "boat"])
 class Rating {
     
     @PrimaryGeneratedColumn("uuid", {name: "rating_id"})
@@ -16,13 +17,14 @@ class Rating {
     @JoinColumn({ name: "boat_id" })
     public boat: Boat;
 
-    @Column({
+    @CreateDateColumn({
         name: "created_at",
         type: "timestamp",
+        default: () => "NOW()"
     })
     public createdAt: Date;
 
-    @Column() //TODO: add 0 to 10 restraint
+    @Column({}) //TODO: add 0 to 5 restraint
     public rating: number;
 
     @Column()
