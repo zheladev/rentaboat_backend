@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import BoatType from "./types/boatType";
 import Comment from "./comment";
 import Port from "./port";
@@ -50,6 +50,13 @@ class Boat {
 
     @Column({name: "number_of_bathrooms"})
     public numberOfBathrooms: number;
+
+    @CreateDateColumn({
+        name: "created_at",
+        type: "timestamp",
+        default: () => "NOW()"
+    })
+    public createdAt: Date;
 
     @OneToMany(() => Rental, rental => rental.boat)
     public rentals: Rental[];

@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import Message from "./message";
 import User from "./user";
 
@@ -16,13 +16,14 @@ class Chat {
     @JoinColumn({ name: "receiver_id" })
     public receiver: User;
 
-    @Column({
+    @CreateDateColumn({
         name: "created_at",
         type: "timestamp",
+        default: () => "NOW()"
     })
     public createdAt: Date;
 
-    @Column({
+    @UpdateDateColumn({
         name: "last_updated",
         type: "timestamp",
     })

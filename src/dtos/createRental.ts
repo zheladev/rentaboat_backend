@@ -1,5 +1,4 @@
-import { IsDate, IsNumber, IsString } from "class-validator";
-import { create } from "ts-node";
+import { IsDate, IsString } from "class-validator";
 
 class CreateRentalDTO {
     @IsDate()

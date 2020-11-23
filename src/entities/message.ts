@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import Chat from "./chat";
 import User from "./user";
 
@@ -18,6 +18,14 @@ class Message {
 
     @Column()
     public content: string;
+
+    @CreateDateColumn({
+        name: "created_at",
+        type: "timestamp",
+        default: () => "NOW()"
+    })
+    public createdAt: Date;
+    
 }
 
 export default Message;
