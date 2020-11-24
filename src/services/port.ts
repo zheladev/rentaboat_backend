@@ -14,7 +14,7 @@ class PortService extends BaseService<Port> {
         });
         await this.repository.save(createdPort);
 
-        return createdPort;
+        return this.repository.findOne(createdPort.id);
     }
 }
 
