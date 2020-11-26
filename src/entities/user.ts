@@ -1,4 +1,4 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import Boat from "./boat";
 import Chat from "./chat";
 import Comment from "./comment";
@@ -45,6 +45,13 @@ class User {
 
     @Column({nullable: false, select: false})
     public password: string;
+
+    @CreateDateColumn({
+        name: "created_at",
+        type: "timestamp",
+        default: () => "NOW()"
+    })
+    public createdAt: Date;
 
     @OneToMany(() => Boat, boat => boat.user)
     public boats: Boat[];

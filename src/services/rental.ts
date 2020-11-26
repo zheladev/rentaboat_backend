@@ -52,6 +52,10 @@ class RentalService extends BaseService<Rental> {
 
         const boat = await this.boatRepository.findOne(boatId, { relations: ["rentals"]});
 
+        if (!boat) {
+            throw new EntityNotFoundException<Boat>();
+        }
+
         const boatRentals = boat.rentals.map((rental) => rental);
 
         if(! await this.checkIfValidRentalDate(rentalData, boatRentals)) {

@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import Boat from "./boat";
 import User from "./user";
 
@@ -17,11 +17,10 @@ class Comment {
     @JoinColumn({ name: "boat_id" })
     public boat: Boat;
 
-    //TODO: implement subcomments
-
-    @Column({
+    @CreateDateColumn({
         name: "created_at",
         type: "timestamp",
+        default: () => "NOW()"
     })
     public createdAt: Date;
 
