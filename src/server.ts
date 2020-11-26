@@ -11,6 +11,7 @@ import BoatController from './controllers/boat';
 import RentalController from './controllers/rental';
 import BoatTypeController from './controllers/boatType';
 import PortController from './controllers/port';
+import ShipyardController from './controllers/shipyard';
 
 
 
@@ -29,6 +30,7 @@ import PortController from './controllers/port';
             new RentalController(),
             new BoatTypeController(),
             new PortController(),
+            new ShipyardController(),
         ],
         [
             bodyParser.json(),
