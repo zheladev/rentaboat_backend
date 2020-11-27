@@ -18,7 +18,7 @@ services:
     container_name: pgadmin_rentaboat_admin
     image: dpage/pgadmin4
     ports:
-    - "8080:80"
+    - "8081:80"
     volumes:
     - /data/pgadmin:/root/.pgadmin
     env_file:

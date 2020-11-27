@@ -7,7 +7,7 @@ import SupportTicket from "../supportTicket";
 })
 class SupportTicketType {
 
-    @PrimaryGeneratedColumn("uuid", {name: "support_ticket_type_id"})
+    @PrimaryGeneratedColumn("uuid", {name: "id"})
     public id: string;
 
     @Column({name: "int_value"})
