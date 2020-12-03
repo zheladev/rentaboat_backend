@@ -3,7 +3,6 @@ import LoginDto from "../dtos/login";
 import RegisterDto from "../dtos/register";
 import UserType from "../entities/types/userType";
 import User from "../entities/user";
-import EntityNotFoundException from "../exceptions/EntityNotFoundException";
 import ForbiddenActionException from "../exceptions/ForbiddenActionException";
 import MissingParametersException from "../exceptions/MissingParametersException";
 import WrongPasswordException from "../exceptions/WrongPasswordException";
@@ -63,7 +62,7 @@ class AuthenticationService extends UserService {
             .leftJoinAndSelect("user.userType", "userType")
             .getOne();
         if(!user) {
-            throw new EntityNotFoundException<User>(User);
+            throw new WrongPasswordException();
         }
 
         if(! await user.isValidPassword(password)) {
