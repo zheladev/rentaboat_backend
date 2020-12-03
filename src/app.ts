@@ -2,6 +2,21 @@ import * as express from 'express';
 import Controller from 'interfaces/controller';
 import 'dotenv/config';
 import errorMiddleware from './middleware/errorHandler';
+import cors = require('cors');
+
+const corsOptions: cors.CorsOptions = {
+    allowedHeaders: [
+      'Origin',
+      'X-Requested-With',
+      'Content-Type',
+      'Accept',
+      'X-Access-Token',
+    ],
+    credentials: true,
+    methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
+    origin: 'http://localhost:8080',
+    preflightContinue: false,
+  };
 
 class App {
     public app: express.Application;
@@ -11,9 +26,14 @@ class App {
         this.app = express();
         this.port = port;
         
+        this.enableCORS()
         this.initializeMiddlewares(middlewares);
         this.initializeControllers(controllers);
         this.initializeErrorHandling();
+    }
+
+    enableCORS() {
+        this.app.use(cors(corsOptions));
     }
 
     initializeControllers(controllers: Array<Controller>) {

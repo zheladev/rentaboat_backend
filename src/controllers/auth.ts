@@ -14,7 +14,7 @@ class AuthenticationController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.get(`${this.path}/login`, this.logIn);
+        this.router.post(`${this.path}/login`, this.logIn);
         this.router.post(`${this.path}/register`, this.register);
     }
 
