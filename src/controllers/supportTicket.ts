@@ -4,7 +4,7 @@ import SupportTicket from "../entities/supportTicket";
 import User from "../entities/user";
 import Controller from "../interfaces/controller";
 import RequestWithUser from "../interfaces/requestWithuser";
-import authMiddleware from "../middleware/auth";
+import { authMiddleware } from "../middleware/auth";
 import SupportTicketService from "../services/supportTicket";
 
 

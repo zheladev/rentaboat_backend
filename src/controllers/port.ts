@@ -2,7 +2,7 @@ import { NextFunction, Request, Response, Router } from "express";
 import CreatePortDTO from "../dtos/createPort";
 import Port from "../entities/port";
 import Controller from "../interfaces/controller";
-import authMiddleware from "../middleware/auth";
+import { authMiddleware } from "../middleware/auth";
 import PortService from "../services/port";
 
 

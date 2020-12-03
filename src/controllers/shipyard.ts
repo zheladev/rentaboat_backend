@@ -2,7 +2,7 @@ import { NextFunction, Request, Response, Router } from "express";
 import CreateShipyardDTO from "../dtos/createShipyard";
 import Shipyard from "../entities/shipyard";
 import Controller from "../interfaces/controller";
-import authMiddleware from "../middleware/auth";
+import { authMiddleware } from "../middleware/auth";
 import ShipyardService from "../services/shipyard";
 
 
