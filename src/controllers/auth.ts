@@ -21,7 +21,7 @@ class AuthenticationController implements Controller {
     private logIn = async (request: Request, response: Response, next: NextFunction) => {
         try {
             const {token, user} = await this.authService.logIn(request.body);
-            response.setHeader('x-access-token', token.token);
+            response.setHeader('X-Access-Token', token.token);
             response.send(user);
         } catch(error) {
             next(error);
@@ -32,7 +32,7 @@ class AuthenticationController implements Controller {
         const newUserData: RegisterDto = request.body;
         try {
             const {token, user} = await this.authService.register(newUserData);
-            response.setHeader('x-access-token', token.token);
+            response.setHeader('X-Access-Token', token.token);
             response.send(user);
         } catch(error) {
             next(error);
