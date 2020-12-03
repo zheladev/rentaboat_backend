@@ -7,7 +7,7 @@ import PortService from "../services/port";
 
 
 class PortController implements Controller {
-    public path = "ports";
+    public path = "/ports";
     public router = Router();
     public portService = new PortService();
 

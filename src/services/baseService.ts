@@ -14,9 +14,9 @@ class BaseService<T> {
     }
 
     public async getById(id: string) {
-        const entity = await this.repository.findOne();
+        const entity = await this.repository.findOne(id);
         if (!entity) {
-            throw new EntityNotFoundException<T>();
+            throw new EntityNotFoundException<T>(this.dataObjectClass);
         }
         return entity;
     }
@@ -24,7 +24,7 @@ class BaseService<T> {
     public async update(id, entityData: Partial<T>) {
         const entity = await this.repository.findOne(id);
         if (!entity) {
-            throw new EntityNotFoundException<T>();
+            throw new EntityNotFoundException<T>(this.dataObjectClass);
         }
 
         Object.keys(entityData).forEach(key => {
@@ -38,7 +38,7 @@ class BaseService<T> {
     //deletes from database, override if logs needed
     public async delete(id) {
         if (!await this.repository.findOne(id)) {
-            throw new EntityNotFoundException<T>();
+            throw new EntityNotFoundException<T>(this.dataObjectClass);
         }
         await this.repository.delete(id);
     }

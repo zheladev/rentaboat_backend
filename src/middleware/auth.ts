@@ -8,17 +8,20 @@ import RequestWithUser from '../interfaces/requestWithuser';
  
 //implement different authorization levels
 async function authMiddleware(request: RequestWithUser, response: Response, next: NextFunction) {
-  const cookies = request.cookies;
+  const bearerToken = request.header("Authorization");
+  console.log(bearerToken)
   const userRepository = getRepository(User);
   
-  if (cookies && cookies.Authorization) {
+  if (bearerToken) {
     const secret = process.env.JWT_SECRET;
     try {
-      const verificationResponse = jwt.verify(cookies.Authorization, secret) as DataStoredInToken;
-      const id = verificationResponse.id;
+        const token = bearerToken.split(' ')[1];
+      const jwtPayload = jwt.verify(token, secret) as DataStoredInToken;
+      const id = jwtPayload.id;
       const user = await userRepository.findOne(id, {relations: ["userType"]});
       if (user) {
         request.user = user;
+        //set new jwt token?
         next();
       } else {
         next(new WrongAuthenticationTokenException());
