@@ -19,7 +19,7 @@ class SupportTicketService extends BaseService<SupportTicket> {
     public async create(supportTicketData: CreateSupportTicketDTO, user: User) {
         const rental = await this.rentalRepository.findOne(supportTicketData.rental);
         if (!rental) {
-            throw new EntityNotFoundException<Rental>();
+            throw new EntityNotFoundException<Rental>(Rental);
         }
 
         const supportTicketType = await this.supportTicketTypeRepository.findOne({
@@ -28,7 +28,7 @@ class SupportTicketService extends BaseService<SupportTicket> {
             }
         });
         if (!supportTicketType) {
-            throw new EntityNotFoundException<SupportTicketType>();
+            throw new EntityNotFoundException<SupportTicketType>(SupportTicketType);
         }
 
         const createdSupportTicket = await this.repository.create({
@@ -47,7 +47,7 @@ class SupportTicketService extends BaseService<SupportTicket> {
     public async resolveTicket(id: string) {
         const supportTicket = await this.repository.findOne(id);
         if (!supportTicket) {
-            throw new EntityNotFoundException<SupportTicket>();
+            throw new EntityNotFoundException<SupportTicket>(SupportTicket);
         }
 
         supportTicket.isResolved = true;
@@ -63,7 +63,7 @@ class SupportTicketService extends BaseService<SupportTicket> {
 
         const supportTicket = await this.repository.findOne(id);
         if (!supportTicket) {
-            throw new EntityNotFoundException<SupportTicket>();
+            throw new EntityNotFoundException<SupportTicket>(SupportTicket);
         }
 
         supportTicket.isAssigned = true;

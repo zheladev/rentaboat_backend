@@ -21,7 +21,7 @@ class ChatService extends BaseService<Chat> {
         const receiver = await this.userRepository.findOne(chatData.receiverId);
 
         if (!receiver) {
-            throw new EntityNotFoundException<User>();
+            throw new EntityNotFoundException<User>(User);
         }
 
         const createdChat = await this.repository.create({

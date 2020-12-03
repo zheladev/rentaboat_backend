@@ -3,7 +3,6 @@ import LoginDto from "../dtos/login";
 import RegisterDto from "../dtos/register";
 import UserType from "../entities/types/userType";
 import User from "../entities/user";
-import EntityNotFoundException from "../exceptions/EntityNotFoundException";
 import ForbiddenActionException from "../exceptions/ForbiddenActionException";
 import MissingParametersException from "../exceptions/MissingParametersException";
 import WrongPasswordException from "../exceptions/WrongPasswordException";
@@ -18,17 +17,16 @@ import EmailAlreadyInUseException from "../exceptions/EmailAlreadyInUseException
 class AuthenticationService extends UserService {
     private userTypeRepository = getRepository(UserType);
 
-    public async logIn( {username, password}: LoginDto): Promise<{cookie: string, user: User}> {
+    public async logIn( {username, password}: LoginDto): Promise<{token: TokenData, user: User}> {
         const user = await this.validateLoginData(username, password);
         const tokenData = this.createToken(user);
-        const cookie = this.createCookie(tokenData);
         return {
-            cookie,
+            token: tokenData,
             user
         }
     }
 
-    public async register(userData: RegisterDto): Promise<{cookie: string, user: User}> {
+    public async register(userData: RegisterDto): Promise<{token: TokenData, user: User}> {
         try {
             const userType = await this.userTypeRepository.findOne({ name: userData.userType });
             await this.validateRegistrationData(userData, userType);
@@ -38,10 +36,9 @@ class AuthenticationService extends UserService {
                 userType: userType
             });
             await this.repository.save(createdUser);
-            const token = this.createToken(createdUser);
-            const cookie = this.createCookie(token);
+            const tokenData = this.createToken(createdUser);
             return {
-                cookie,
+                token: tokenData,
                 user: createdUser,
             }
         } catch (error) {
@@ -62,10 +59,10 @@ class AuthenticationService extends UserService {
             .where('user.username = :username', {
                 username: username
             })
+            .leftJoinAndSelect("user.userType", "userType")
             .getOne();
-
         if(!user) {
-            throw new EntityNotFoundException<User>();
+            throw new WrongPasswordException();
         }
 
         if(! await user.isValidPassword(password)) {
@@ -90,13 +87,9 @@ class AuthenticationService extends UserService {
             throw new EmailAlreadyInUseException(userData.email);
         }
     }
-    
-    private createCookie (tokenData: TokenData) {
-        return `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`;
-    }
 
     private createToken(user: User): TokenData {
-        const expiresIn = 60 * 60; // 1 hour
+        const expiresIn = 60 * 60 * 24; // 1 day
         const secret = process.env.JWT_SECRET;
         const dataStoredInToken: DataStoredInToken = {
           id: user.id,

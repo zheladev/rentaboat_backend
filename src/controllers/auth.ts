@@ -14,14 +14,14 @@ class AuthenticationController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.get(`${this.path}/login`, this.logIn);
+        this.router.post(`${this.path}/login`, this.logIn);
         this.router.post(`${this.path}/register`, this.register);
     }
 
     private logIn = async (request: Request, response: Response, next: NextFunction) => {
         try {
-            const {cookie, user} = await this.authService.logIn(request.body);
-            response.setHeader('Set-Cookie', [cookie]);
+            const {token, user} = await this.authService.logIn(request.body);
+            response.setHeader('X-Access-Token', token.token);
             response.send(user);
         } catch(error) {
             next(error);
@@ -31,8 +31,8 @@ class AuthenticationController implements Controller {
     private register = async (request: Request, response: Response, next: NextFunction) => {
         const newUserData: RegisterDto = request.body;
         try {
-            const {cookie, user} = await this.authService.register(newUserData);
-            response.setHeader('Set-Cookie', [cookie]);
+            const {token, user} = await this.authService.register(newUserData);
+            response.setHeader('X-Access-Token', token.token);
             response.send(user);
         } catch(error) {
             next(error);

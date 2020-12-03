@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
 import BoatType from "../entities/types/boatType";
 import Controller from "../interfaces/controller";
-import authMiddleware from "../middleware/auth";
+import { authMiddleware } from "../middleware/auth";
 import BoatTypeService from "../services/boattype";
 
 

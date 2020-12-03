@@ -2,11 +2,8 @@ import HttpException from "./HttpException";
 
 
 class EntityNotFoundException<T> extends HttpException {
-    public entityClass: {new(): T};
-    constructor() {
-        let entityClass: {new(): T};
-        super(404, `${entityClass.name} with specified params not found.`);
-        this.entityClass = entityClass;
+    constructor(x : new () => T) {
+        super(404, `${x.name} with specified params not found.`);
     }
 }
 

@@ -5,7 +5,7 @@ import Rental from "../entities/rental";
 import User from "../entities/user";
 import Controller from "../interfaces/controller";
 import RequestWithUser from "../interfaces/requestWithuser";
-import authMiddleware from "../middleware/auth";
+import { authMiddleware } from "../middleware/auth";
 import RentalService from "../services/rental";
 
 class RentalController implements Controller {

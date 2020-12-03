@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
 import User from "../entities/user";
 import Controller from "../interfaces/controller";
-import authMiddleware from "../middleware/auth";
+import { authMiddleware, checkRole } from "../middleware/auth";
 import UserService from "../services/user";
 
 class UserController implements Controller {

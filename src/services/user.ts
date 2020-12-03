@@ -9,7 +9,7 @@ class UserService extends BaseService<User> {
 
     public async delete(id: string) {
         if (!await this.repository.findOne(id)) {
-            throw new EntityNotFoundException<User>();
+            throw new EntityNotFoundException<User>(User);
         }
         await this.repository.update(id, { isDeleted: true });
     }
