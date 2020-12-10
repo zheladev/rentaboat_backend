@@ -5,6 +5,7 @@ import User from "../entities/user";
 import Controller from "../interfaces/controller";
 import RequestWithUser from "../interfaces/requestWithuser";
 import { authMiddleware } from "../middleware/auth";
+import validateUUID from "../middleware/validation";
 import SupportTicketService from "../services/supportTicket";
 
 
@@ -19,13 +20,13 @@ class SupportTicketController implements Controller {
 
     private initializeRoutes() {
         this.router.get(this.path, this.getAllSupportTickets);
-        this.router.get(`${this.path}/:id`, this.getSupportTicketById);
+        this.router.get(`${this.path}/:id`, validateUUID, this.getSupportTicketById);
         this.router.post(`${this.path}`, authMiddleware, this.createSupportTicket);
         this.router.all(`${this.path}/*`, authMiddleware)
-            .patch(`${this.path}/:id`, this.modifySupportTicket)
-            .patch(`${this.path}/:id/resolve`, this.resolveSupportTicket)
-            .patch(`${this.path}/:id/assign`, this.assignSupportTicketToCurrentUser)
-            .delete(`${this.path}/:id`, this.deleteSupportTicket)
+            .patch(`${this.path}/:id`, validateUUID, this.modifySupportTicket)
+            .patch(`${this.path}/:id/resolve`, validateUUID, this.resolveSupportTicket)
+            .patch(`${this.path}/:id/assign`, validateUUID, this.assignSupportTicketToCurrentUser)
+            .delete(`${this.path}/:id`, validateUUID, this.deleteSupportTicket)
     }
 
     private assignSupportTicketToCurrentUser = async (request: RequestWithUser, response: Response, next: NextFunction) => {

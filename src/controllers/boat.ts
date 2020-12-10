@@ -4,6 +4,7 @@ import User from "../entities/user";
 import Controller from "../interfaces/controller";
 import RequestWithUser from "../interfaces/requestWithuser";
 import { authMiddleware } from "../middleware/auth";
+import validateUUID from "../middleware/validation";
 import BoatService from "../services/boat";
 
 
@@ -18,11 +19,11 @@ class BoatController implements Controller {
 
     private initializeRoutes() {
         this.router.get(this.path, this.getAllBoats);
-        this.router.get(`${this.path}/:id`, this.getBoatById);
+        this.router.get(`${this.path}/:id`, validateUUID, this.getBoatById);
         this.router.post(`${this.path}`, authMiddleware, this.createBoat);
         this.router.all(`${this.path}/*`, authMiddleware)
-            .patch(`${this.path}/:id`, this.modifyBoat)
-            .delete(`${this.path}/:id`, this.deleteBoat)
+            .patch(`${this.path}/:id`, validateUUID, this.modifyBoat)
+            .delete(`${this.path}/:id`, validateUUID, this.deleteBoat)
     }
     
     //TODO: endpoint to query by custom params

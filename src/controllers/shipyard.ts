@@ -3,6 +3,7 @@ import CreateShipyardDTO from "../dtos/createShipyard";
 import Shipyard from "../entities/shipyard";
 import Controller from "../interfaces/controller";
 import { authMiddleware } from "../middleware/auth";
+import validateUUID from "../middleware/validation";
 import ShipyardService from "../services/shipyard";
 
 
@@ -17,11 +18,11 @@ class ShipyardController implements Controller {
 
     private initializeRoutes() {
         this.router.get(this.path, this.getAllShipyards);
-        this.router.get(`${this.path}/:id`, this.getShipyardById);
+        this.router.get(`${this.path}/:id`, validateUUID, this.getShipyardById);
         this.router.post(`${this.path}`, authMiddleware, this.createShipyard);
         this.router.all(`${this.path}/*`, authMiddleware)
-            .patch(`${this.path}/:id`, this.modifyShipyard)
-            .delete(`${this.path}/:id`, this.deleteShipyard)
+            .patch(`${this.path}/:id`, validateUUID, this.modifyShipyard)
+            .delete(`${this.path}/:id`, validateUUID, this.deleteShipyard)
     }
 
     private getAllShipyards = async (request: Request, response: Response, next: NextFunction) => {

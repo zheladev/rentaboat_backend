@@ -2,6 +2,7 @@ import { NextFunction, Request, Response, Router } from "express";
 import User from "../entities/user";
 import Controller from "../interfaces/controller";
 import { authMiddleware, checkRole } from "../middleware/auth";
+import validateUUID from "../middleware/validation";
 import UserService from "../services/user";
 
 class UserController implements Controller {
@@ -15,10 +16,10 @@ class UserController implements Controller {
 
     private initializeRoutes() {
         this.router.get(this.path, this.getAllUsers);
-        this.router.get(`${this.path}/:id`, this.getUserById);
+        this.router.get(`${this.path}/:id`, validateUUID, this.getUserById);
         this.router.all(`${this.path}/*`, authMiddleware)
-            .patch(`${this.path}/:id`, this.modifyUser)
-            .delete(`${this.path}/:id`, this.deleteUser);
+            .patch(`${this.path}/:id`, validateUUID, this.modifyUser)
+            .delete(`${this.path}/:id`, validateUUID, this.deleteUser);
     }
 
     private getAllUsers = async (request: Request, response: Response, next: NextFunction) => {

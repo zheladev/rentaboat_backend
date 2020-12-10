@@ -3,6 +3,7 @@ import CreatePortDTO from "../dtos/createPort";
 import Port from "../entities/port";
 import Controller from "../interfaces/controller";
 import { authMiddleware } from "../middleware/auth";
+import validateUUID from "../middleware/validation";
 import PortService from "../services/port";
 
 
@@ -17,11 +18,11 @@ class PortController implements Controller {
 
     private initializeRoutes() {
         this.router.get(this.path, this.getAllPorts);
-        this.router.get(`${this.path}/:id`, this.getPortById);
+        this.router.get(`${this.path}/:id`, validateUUID, this.getPortById);
         this.router.post(`${this.path}`, authMiddleware, this.createPort);
         this.router.all(`${this.path}/*`, authMiddleware)
-            .patch(`${this.path}/:id`, this.modifyPort)
-            .delete(`${this.path}/:id`, this.deletePort)
+            .patch(`${this.path}/:id`, validateUUID, this.modifyPort)
+            .delete(`${this.path}/:id`, validateUUID, this.deletePort)
     }
 
     private getAllPorts = async (request: Request, response: Response, next: NextFunction) => {

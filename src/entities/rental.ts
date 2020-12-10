@@ -19,8 +19,8 @@ class Rental {
     public boat: Boat;
 
     @ManyToOne(() => User, user => user.rentals)
-    @JoinColumn({name: "tenant_id"})
-    public tenant: User;
+    @JoinColumn({name: "renter_id"})
+    public renter: User;
 
     @Column({name: "start_date", type: "timestamp"})
     public startDate: Date;

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response, Router } from "express";
 import BoatType from "../entities/types/boatType";
 import Controller from "../interfaces/controller";
 import { authMiddleware } from "../middleware/auth";
+import validateUUID from "../middleware/validation";
 import BoatTypeService from "../services/boattype";
 
 
@@ -16,11 +17,11 @@ class BoatTypeController implements Controller {
 
     private initializeRoutes() {
         this.router.get(this.path, this.getAllBoatTypes);
-        this.router.get(`${this.path}/:id`, this.getBoatTypeById);
+        this.router.get(`${this.path}/:id`, validateUUID, this.getBoatTypeById);
         this.router.post(`${this.path}`, authMiddleware, this.createBoatType);
         this.router.all(`${this.path}/*`, authMiddleware)
-            .patch(`${this.path}/:id`, this.modifyBoatType)
-            .delete(`${this.path}/:id`, this.deleteBoatType)
+            .patch(`${this.path}/:id`, validateUUID, this.modifyBoatType)
+            .delete(`${this.path}/:id`, validateUUID, this.deleteBoatType)
     }
 
     private getAllBoatTypes = async (request: Request, response: Response, next: NextFunction) => {

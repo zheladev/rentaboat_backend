@@ -56,7 +56,7 @@ class User {
     @OneToMany(() => Boat, boat => boat.user)
     public boats: Boat[];
 
-    @OneToMany(() => Rental, rental => rental.tenant)
+    @OneToMany(() => Rental, rental => rental.renter)
     public rentals: Rental[];
 
     @OneToMany(() => SupportTicket, supportTicket => supportTicket.issuer)

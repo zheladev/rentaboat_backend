@@ -14,7 +14,7 @@ class RentalService extends BaseService<Rental> {
     }
 
     public async getByBoatId(boatId: string) {
-        const rentals = await this.repository.find({where: {boat: boatId}, relations: ["tenant"]});
+        const rentals = await this.repository.find({where: {boat: boatId}, relations: ["renter"]});
         if(rentals.length < 1) {
             throw new EntityNotFoundException<Rental>(Rental);
         }
@@ -22,12 +22,12 @@ class RentalService extends BaseService<Rental> {
         return rentals;
     }   
 
-    public async getByTenantId(userId: string, user: User) {
+    public async getByRenterId(userId: string, user: User) {
         if(!(userId === user.id || user.userType.intValue <= 1)) {
-            throw new ForbiddenActionException("Access tenant rentals");
+            throw new ForbiddenActionException("Access renter rentals");
         }
 
-        const rentals = await this.repository.find({where: {tenant: userId}});
+        const rentals = await this.repository.find({where: {renter: userId}});
 
         return rentals;
     }
@@ -64,7 +64,7 @@ class RentalService extends BaseService<Rental> {
 
         const createdRental = await this.repository.create({
             ...rentalData,
-            tenant: user,
+            renter: user,
             boat: boat,
         })
         await this.repository.save(createdRental);

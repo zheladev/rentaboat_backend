@@ -6,6 +6,7 @@ import User from "../entities/user";
 import Controller from "../interfaces/controller";
 import RequestWithUser from "../interfaces/requestWithuser";
 import { authMiddleware } from "../middleware/auth";
+import validateUUID from "../middleware/validation";
 import RentalService from "../services/rental";
 
 class RentalController implements Controller {
@@ -19,14 +20,14 @@ class RentalController implements Controller {
 
     private initializeRoutes() {
         this.router.get(this.path, this.getAllRentals);
-        this.router.get(`${this.path}/:id`, this.getRentalById);
-        this.router.get(`${this.path}/boat/:id`, this.getRentalsByBoatId);
+        this.router.get(`${this.path}/:id`, validateUUID, this.getRentalById);
+        this.router.get(`${this.path}/boat/:id`, validateUUID, this.getRentalsByBoatId);
         this.router.post(`${this.path}`, authMiddleware, this.createRental);
         this.router.all(`${this.path}/*`, authMiddleware)
-            .get(`${this.path}/user/:id`, this.getRentalsByUserId)
-            .get(`${this.path}/tenant/:id`, this.getRentalsByTenantId)
-            .patch(`${this.path}/:id`, this.modifyRental)
-            .delete(`${this.path}/:id`, this.deleteRental);
+            .get(`${this.path}/user/:id`, validateUUID, this.getRentalsByUserId)
+            .get(`${this.path}/renter/:id`, validateUUID, this.getRentalsByRenterId)
+            .patch(`${this.path}/:id`, validateUUID, this.modifyRental)
+            .delete(`${this.path}/:id`, validateUUID, this.deleteRental);
     }
 
     private getAllRentals = async (request: Request, response: Response, next: NextFunction) => {
@@ -69,11 +70,11 @@ class RentalController implements Controller {
         }
     }
 
-    private getRentalsByTenantId = async (request: RequestWithUser, response: Response, next: NextFunction) => {
-        const tenantId = request.params.id;
+    private getRentalsByRenterId = async (request: RequestWithUser, response: Response, next: NextFunction) => {
+        const renterId = request.params.id;
         const user: User = request.user;
         try {
-            const rentals = await this.rentalService.getByTenantId(tenantId, user);
+            const rentals = await this.rentalService.getByRenterId(renterId, user);
             response.send(rentals);
         } catch (error) {
             next(error)
