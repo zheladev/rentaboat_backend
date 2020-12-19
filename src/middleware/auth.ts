@@ -23,7 +23,6 @@ export function checkRole(requiredRoleLevel: string, canAccessIfOwner = false) {
 
 export async function authMiddleware(request: RequestWithUser, response: Response, next: NextFunction) {
   const bearerToken = request.header("Authorization");
-  console.log(bearerToken)
   const userRepository = getRepository(User);
   
   if (bearerToken) {

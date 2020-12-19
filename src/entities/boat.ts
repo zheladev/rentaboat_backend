@@ -27,6 +27,9 @@ class Boat {
     @ManyToOne(() => Port, port => port.boats)
     public port: Port;
 
+    @Column({nullable: true})
+    public name: string;
+
     @Column()
     public description: string;
 

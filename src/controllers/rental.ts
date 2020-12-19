@@ -25,7 +25,7 @@ class RentalController implements Controller {
         this.router.post(`${this.path}`, authMiddleware, this.createRental);
         this.router.all(`${this.path}/*`, authMiddleware)
             .get(`${this.path}/user/:id`, validateUUID, this.getRentalsByUserId)
-            .get(`${this.path}/renter/:id`, validateUUID, this.getRentalsByRenterId)
+            .get(`${this.path}/owner/:id`, validateUUID, this.getRentalsByOwnerId)
             .patch(`${this.path}/:id`, validateUUID, this.modifyRental)
             .delete(`${this.path}/:id`, validateUUID, this.deleteRental);
     }
@@ -70,11 +70,11 @@ class RentalController implements Controller {
         }
     }
 
-    private getRentalsByRenterId = async (request: RequestWithUser, response: Response, next: NextFunction) => {
-        const renterId = request.params.id;
+    private getRentalsByOwnerId = async (request: RequestWithUser, response: Response, next: NextFunction) => {
+        const ownerId = request.params.id;
         const user: User = request.user;
         try {
-            const rentals = await this.rentalService.getByRenterId(renterId, user);
+            const rentals = await this.rentalService.getByOwnerId(ownerId, user);
             response.send(rentals);
         } catch (error) {
             next(error)
