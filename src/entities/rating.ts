@@ -24,7 +24,7 @@ class Rating {
     })
     public createdAt: Date;
 
-    @Column({}) //TODO: add 0 to 5 restraint
+    @Column() //TODO: add 0 to 5 restraint
     public rating: number;
 
     @Column()

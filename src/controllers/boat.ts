@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response, Router } from "express";
 import CreateBoatDto from "../dtos/createBoat";
+import PostCommentDTO from "../dtos/postComment";
+import PostRatingDTO from "../dtos/postRating";
+import Comment from "../entities/comment";
 import User from "../entities/user";
 import Controller from "../interfaces/controller";
 import RequestWithUser from "../interfaces/requestWithuser";
@@ -21,6 +24,8 @@ class BoatController implements Controller {
         this.router.get(this.path, this.getAllBoats);
         this.router.get(`${this.path}/:id`, validateUUID, this.getBoatById);
         this.router.post(`${this.path}`, authMiddleware, this.createBoat);
+        this.router.post(`${this.path}/:id/comment`, authMiddleware, this.postComment);
+        this.router.post(`${this.path}/:id/rating`, authMiddleware, this.postRating);
         this.router.all(`${this.path}/*`, authMiddleware)
             .patch(`${this.path}/:id`, validateUUID, this.modifyBoat)
             .delete(`${this.path}/:id`, validateUUID, this.deleteBoat)
@@ -78,6 +83,30 @@ class BoatController implements Controller {
             const createdBoat = await this.boatService.create(boatData, user);
             response.send(createdBoat);
         } catch (error) {
+            next(error);
+        }
+    }
+
+    private postComment = async (request: RequestWithUser, response: Response, next: NextFunction) => {
+        const user: User = request.user;
+        const boatId = request.params.id;
+        const commentData: PostCommentDTO = request.body;
+        try {
+            const comment = await this.boatService.postComment(boatId, commentData, user);
+            response.send(comment);
+        } catch(error) {
+            next(error);
+        }
+    }
+
+    private postRating = async (request: RequestWithUser, response: Response, next: NextFunction) => {
+        const user: User = request.user;
+        const boatId = request.params.id;
+        const ratingData: PostRatingDTO = request.body;
+        try {
+            const rating = await this.boatService.postRating(boatId, ratingData, user);
+            response.send(rating);
+        } catch(error) {
             next(error);
         }
     }
