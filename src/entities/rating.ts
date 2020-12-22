@@ -1,9 +1,10 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Check, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
 import Boat from "./boat";
 import User from "./user";
 
 @Entity()
 @Unique(["user", "boat"])
+@Check(`rating >= 0 AND rating <= 5`)
 class Rating {
     
     @PrimaryGeneratedColumn("uuid", {name: "rating_id"})
@@ -24,7 +25,7 @@ class Rating {
     })
     public createdAt: Date;
 
-    @Column() //TODO: add 0 to 5 restraint
+    @Column()
     public rating: number;
 
     @Column()
