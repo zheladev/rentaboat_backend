@@ -2,7 +2,7 @@ import { IsEmail, IsString } from "class-validator";
 
 class RegisterDto {
     @IsString()
-    public userType: string;
+    public userType: number;
 
     @IsEmail()
     public email: string;
