@@ -16,7 +16,7 @@ const corsOptions: cors.CorsOptions = {
     exposedHeaders: ['X-Access-Token'],
     credentials: true,
     methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
-    origin: 'http://localhost:8080',
+    origin: '*',
     preflightContinue: false,
   };
 
