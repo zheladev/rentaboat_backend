@@ -28,7 +28,7 @@ class AuthenticationService extends UserService {
 
     public async register(userData: RegisterDto): Promise<{token: TokenData, user: User}> {
         try {
-            const userType = await this.userTypeRepository.findOne({ name: userData.userType });
+            const userType = await this.userTypeRepository.findOne({ intValue: userData.userType });
             await this.validateRegistrationData(userData, userType);
 
             const createdUser = await this.repository.create({
