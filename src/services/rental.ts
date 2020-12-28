@@ -46,7 +46,7 @@ class RentalService extends BaseService<Rental> {
 
         const rentals = await this.repository.find({
             where: where,
-            relations: ["boat", "boat.shipyard", "boat.user"],
+            relations: ["boat", "boat.shipyard", "boat.user", "boat.port"],
             order: { startDate: "ASC" }
         });
 

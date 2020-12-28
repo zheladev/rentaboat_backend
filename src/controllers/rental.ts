@@ -63,7 +63,7 @@ class RentalController implements Controller {
         const userId = request.params.id;
         const user: User = request.user; 
         try {
-            const rentals = await this.rentalService.getByUserId(userId, user);
+            const rentals = await this.rentalService.getByUserId(userId, user, false);
             response.send(rentals);
         } catch (error) {
             next(error)

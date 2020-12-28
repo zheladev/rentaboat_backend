@@ -31,6 +31,9 @@ class Rental {
     @Column()
     public comment: string;
 
+    @Column({name: "price_paid", type: "decimal", scale: 2, precision: 20, nullable: true })
+    public pricePaid: number;
+
     @OneToMany(() => SupportTicket, supportTicket => supportTicket.rental)
     public supportTickets: SupportTicket[];
 }
