@@ -5,7 +5,7 @@ import User from '../entities/user';
 import ForbiddenActionException from '../exceptions/ForbiddenActionException';
 import WrongAuthenticationTokenException from '../exceptions/WrongAuthenticationTokenException';
 import DataStoredInToken from '../interfaces/dataStoredInToken';
-import RequestWithUser from '../interfaces/requestWithuser';
+import RequestWithUser from '../interfaces/requestWithUser';
  
 
 const ROLES = ['admin', 'support', 'renter', 'client'];

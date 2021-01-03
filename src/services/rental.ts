@@ -68,10 +68,13 @@ class RentalService extends BaseService<Rental> {
             throw new ForbiddenActionException("Duplicate date");
         }
 
+        const rentalPrice: number = boat.pricePerDay * (this.getDaysFromPostgresInterval(rentalData.durationInDays) + 1);
+
         const createdRental = await this.repository.create({
             ...rentalData,
             renter: user,
             boat: boat,
+            pricePaid: rentalPrice,
         })
         await this.repository.save(createdRental);
 

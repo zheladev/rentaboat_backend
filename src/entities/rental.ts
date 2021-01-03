@@ -28,10 +28,10 @@ class Rental {
     @Column({name: "duration_in_days", type: "interval"})
     public durationInDays: string | PostgresTimeInterval;
 
-    @Column()
+    @Column({nullable: true})
     public comment: string;
 
-    @Column({name: "price_paid", type: "decimal", scale: 2, precision: 20, nullable: true })
+    @Column({name: "price_paid", type: "decimal", scale: 2, precision: 20 })
     public pricePaid: number;
 
     @OneToMany(() => SupportTicket, supportTicket => supportTicket.rental)
