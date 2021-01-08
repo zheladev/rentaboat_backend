@@ -6,6 +6,9 @@ class CreateBoatDto {
     public shipyard;
 
     @IsString()
+    public name;
+
+    @IsString()
     public boatType;
 
     @IsString()
