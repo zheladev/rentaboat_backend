@@ -23,6 +23,7 @@ class BoatController implements Controller {
     private initializeRoutes() {
         this.router.get(this.path, this.getAllBoats);
         this.router.get(`${this.path}/:id`, validateUUID, this.getBoatById);
+        this.router.get(`${this.path}/owner/:id`, this.getBoatByOwnerId);
         this.router.post(`${this.path}`, authMiddleware, this.createBoat);
         this.router.post(`${this.path}/:id/comment`, authMiddleware, this.postComment);
         this.router.post(`${this.path}/:id/rating`, authMiddleware, this.postRating);
@@ -43,11 +44,21 @@ class BoatController implements Controller {
 
     }
 
+    private getBoatByOwnerId = async (request: Request, response: Response, next: NextFunction) => {
+        const id = request.params.id;
+        try {
+            const boats = await this.boatService.getByUserId(id);
+            response.send(boats);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     private getBoatById = async (request: Request, response: Response, next: NextFunction) => {
         const id = request.params.id;
         try {
             const boat = await this.boatService.getById(id);
-            response.send(boat)
+            response.send(boat);
         } catch (error) {
             next(error);
         }

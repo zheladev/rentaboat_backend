@@ -14,7 +14,7 @@ import ForbiddenActionException from "../exceptions/ForbiddenActionException";
 import MissingParametersException from "../exceptions/MissingParametersException";
 import BaseService from "./baseService";
 
-type BoatFKs = { shipyard: string, boatType: string, port: string};
+type BoatFKs = { shipyard: string, boatType: string, port: string };
 
 class BoatService extends BaseService<Boat> {
     private shipyardRepository = getRepository(Shipyard);
@@ -28,14 +28,14 @@ class BoatService extends BaseService<Boat> {
     }
 
     public async getAll() {
-        const boats = await this.repository.find({ relations: ["user", "shipyard", "boatType", "ratings", "comments"]});
+        const boats = await this.repository.find({ relations: ["user", "shipyard", "boatType", "ratings", "comments"] });
         return boats;
     }
 
     public async updateWithUser(id: string, boatData: Partial<CreateBoatDto>, user: User) {
-        const boat = await this.repository.findOne({id: id}, {relations: ["user"]});
+        const boat = await this.repository.findOne({ id: id }, { relations: ["user"] });
 
-        if(boat === undefined) {
+        if (boat === undefined) {
             throw new EntityNotFoundException<Boat>(Boat);
         }
 
@@ -43,19 +43,19 @@ class BoatService extends BaseService<Boat> {
             throw new ForbiddenActionException("Modify boat");
         }
 
-        const updatedBoat = await this.update(id, boatData);
-        return updatedBoat;
+        await this.update(id, boatData);
+        return await this.repository.findOne(id, { relations: ["user", "port", "shipyard", "boatType", "ratings", "comments", "rentals", "rentals.renter"] });
     }
 
     public async create(boatData: CreateBoatDto, user: User) {
-        const { shipyard, boatType, port } : BoatFKs = boatData;
+        const { shipyard, boatType, port }: BoatFKs = boatData;
         const lowercaseShipyard = shipyard.toLowerCase();
 
         const shipyardEntity = await this.getShipyardEntity(lowercaseShipyard);
-        
+
         const boatTypeEntity = await this.boatTypeRepository.findOne({ name: boatType });
 
-        const portEntity = await this.portRepository.findOne({name: port});
+        const portEntity = await this.portRepository.findOne({ name: port });
 
         if (!(boatTypeEntity && portEntity)) {
             throw new MissingParametersException();
@@ -70,7 +70,8 @@ class BoatService extends BaseService<Boat> {
         });
 
         await this.repository.save(createdBoat);
-        return createdBoat;
+        //might not have id param
+        return await this.repository.findOne(createdBoat.id, { relations: ["user", "port", "shipyard", "boatType", "ratings", "comments", "rentals", "rentals.renter"] });
     }
 
     public async delete(id: string) {
@@ -81,7 +82,7 @@ class BoatService extends BaseService<Boat> {
     }
 
     public async getById(id: string) {
-        const boat = await this.repository.findOne(id, {relations: ["user", "shipyard", "boatType", "ratings", "comments"]});
+        const boat = await this.repository.findOne(id, { relations: ["user", "shipyard", "boatType", "ratings", "comments"] });
         if (!boat) {
             throw new EntityNotFoundException<Boat>(Boat);
         }
@@ -90,7 +91,7 @@ class BoatService extends BaseService<Boat> {
     }
 
     public async getByUserId(userId: string) {
-        const entity = await this.repository.find({where: {user: userId}, relations: ["user", "shipyard", "boatType", "ratings", "comments"]});
+        const entity = await this.repository.find({ where: { user: userId }, relations: ["user", "port", "shipyard", "boatType", "ratings", "comments", "rentals", "rentals.renter"], order: { createdAt: "ASC" } } );
         if (!entity) {
             throw new EntityNotFoundException<Boat>(Boat);
         }
@@ -100,8 +101,8 @@ class BoatService extends BaseService<Boat> {
     //TODO: add endpoint
     public async postComment(boatId: string, commentData: PostCommentDTO, user: User) {
         const boat = await this.repository.findOne(boatId);
-        
-        if(!boat) {
+
+        if (!boat) {
             throw new EntityNotFoundException<Boat>(Boat);
         }
 
@@ -118,8 +119,8 @@ class BoatService extends BaseService<Boat> {
     //TODO: add endpoint
     public async postRating(boatId: string, ratingData: PostRatingDTO, user: User) {
         const boat = await this.repository.findOne(boatId);
-        
-        if(!boat) {
+
+        if (!boat) {
             throw new EntityNotFoundException<Boat>(Boat);
         }
 
