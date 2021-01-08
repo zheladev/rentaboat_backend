@@ -1,9 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 import User from "../user";
 
 @Entity({
     name: "user_type"
 })
+@Unique(["name"])
 class UserType {
     @PrimaryGeneratedColumn("uuid", { name: "user_type_id" })
     public id: string;

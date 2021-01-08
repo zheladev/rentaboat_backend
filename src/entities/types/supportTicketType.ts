@@ -1,10 +1,11 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 import SupportTicket from "../supportTicket";
 
 
 @Entity({
     name: "support_ticket_type"
 })
+@Unique(["name"])
 class SupportTicketType {
 
     @PrimaryGeneratedColumn("uuid", {name: "id"})

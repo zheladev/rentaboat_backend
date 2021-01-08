@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node ./src/server.ts",
     "dev:watch": "nodemon",
+    "populate-database": "ts-node ./src/populateDatabase.ts",
     "build": "tsc"
   },
   "author": "Aitor Santillana",
