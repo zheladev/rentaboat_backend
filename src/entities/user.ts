@@ -8,6 +8,7 @@ import Rental from "./rental";
 import SupportTicket from "./supportTicket";
 import UserType from "./types/userType";
 import * as bcrypt from 'bcrypt';
+import BillingInformation from "./billingInformation";
 
 const BCRYPT_SALT_ROUNDS = 10;
 
@@ -79,6 +80,9 @@ class User {
 
     @OneToMany(() => Message, message => message.user)
     public messages: Message[];
+
+    @OneToMany(() => BillingInformation, BillingInformation => BillingInformation.user)
+    public billingInformations: BillingInformation[];
 
     @BeforeInsert()
     async beforeInsert() {
