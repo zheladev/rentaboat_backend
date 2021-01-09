@@ -2,6 +2,7 @@ import { NextFunction, Request, Response, Router } from "express";
 import CreateBillingInformationDTO from "../dtos/createBillingInformation";
 import User from "../entities/user";
 import Controller from "../interfaces/controller";
+import RequestWithUser from "../interfaces/requestWithUser";
 import { authMiddleware, checkRole } from "../middleware/auth";
 import validateUUID from "../middleware/validation";
 import UserService from "../services/user";
@@ -22,6 +23,7 @@ class UserController implements Controller {
             .get(`${this.path}/:id/billing`, validateUUID, this.getAllBillingInformation)
             .post(`${this.path}/:id/billing`, validateUUID, this.createBillingInformation)
             .patch(`${this.path}/:id`, validateUUID, this.modifyUser)
+            .patch(`${this.path}/:id/promote`, validateUUID, this.promoteToOwner)
             .delete(`${this.path}/:id`, validateUUID, this.deleteUser);
     }
 
@@ -64,6 +66,16 @@ class UserController implements Controller {
             next(error);
         }
     };
+
+    private promoteToOwner = async (request: RequestWithUser, response: Response, next: NextFunction) => {
+        const id = request.params.id;
+        try {
+            const promotedUser = await this.userService.promoteToOwner(id);
+            response.send(promotedUser);
+        } catch(error) {
+            next(error);
+        }
+    } 
 
     private createBillingInformation = async (request: Request, response: Response, next: NextFunction) => {
         const id = request.params.id;
