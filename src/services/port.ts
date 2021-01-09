@@ -9,7 +9,7 @@ class PortService extends BaseService<Port> {
 
     public async create(portData: CreatePortDTO) {
 
-        const createdPort = this.repository.create({
+        const createdPort = await this.repository.create({
             ...portData
         });
         await this.repository.save(createdPort);

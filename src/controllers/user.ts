@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
+import CreateBillingInformationDTO from "../dtos/createBillingInformation";
 import User from "../entities/user";
 import Controller from "../interfaces/controller";
 import { authMiddleware, checkRole } from "../middleware/auth";
@@ -18,6 +19,8 @@ class UserController implements Controller {
         this.router.get(this.path, this.getAllUsers);
         this.router.get(`${this.path}/:id`, validateUUID, this.getUserById);
         this.router.all(`${this.path}/*`, authMiddleware)
+            .get(`${this.path}/:id/billing`, validateUUID, this.getAllBillingInformation)
+            .post(`${this.path}/:id/billing`, validateUUID, this.createBillingInformation)
             .patch(`${this.path}/:id`, validateUUID, this.modifyUser)
             .delete(`${this.path}/:id`, validateUUID, this.deleteUser);
     }
@@ -62,6 +65,26 @@ class UserController implements Controller {
         }
     };
 
+    private createBillingInformation = async (request: Request, response: Response, next: NextFunction) => {
+        const id = request.params.id;
+        const billingInformationData: CreateBillingInformationDTO = request.body;
+        try {
+            const createdBI = await this.userService.createBillingInformation(id, billingInformationData);
+            response.send(createdBI);
+        } catch(error) {
+            next(error);
+        }
+    }
+
+    private getAllBillingInformation = async (request: Request, response: Response, next: NextFunction) => {
+        const id = request.params.id;
+        try {
+            const billingInformationArray = await this.userService.getAllBillingInformation(id);
+            response.send(billingInformationArray);
+        } catch(error) {
+            next(error);
+        }
+    }
 }
 
 export default UserController;
