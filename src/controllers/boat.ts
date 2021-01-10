@@ -6,9 +6,11 @@ import Comment from "../entities/comment";
 import User from "../entities/user";
 import Controller from "../interfaces/controller";
 import RequestWithUser from "../interfaces/requestWithuser";
+import { ISearchCriteria } from "../interfaces/searchCriteria";
 import { authMiddleware } from "../middleware/auth";
 import validateUUID from "../middleware/validation";
 import BoatService from "../services/boat";
+import { parseSearchCriteriaStr } from "../utils/SearchCriteriaParser";
 
 
 class BoatController implements Controller {
@@ -31,12 +33,14 @@ class BoatController implements Controller {
             .patch(`${this.path}/:id`, validateUUID, this.modifyBoat)
             .delete(`${this.path}/:id`, validateUUID, this.deleteBoat)
     }
-    
-    //TODO: endpoint to query by custom params
-
     private getAllBoats = async (request: Request, response: Response, next: NextFunction) => {
+        const rawQueryParams = request.query.search as string || '';
+        const take = Number(request.query.limit as string) || 10;
+        const skip = Number(request.query.page as string) || 0;
+        console.log(rawQueryParams);
+        const searchCriteriaArr: ISearchCriteria[] = parseSearchCriteriaStr(rawQueryParams);
         try {
-            const boats = await this.boatService.getAll();
+            const boats = await this.boatService.getAll(skip, take, searchCriteriaArr);
             response.send(boats)
         } catch (error) {
             next(error);

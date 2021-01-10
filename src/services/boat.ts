@@ -12,6 +12,8 @@ import User from "../entities/user";
 import EntityNotFoundException from "../exceptions/EntityNotFoundException";
 import ForbiddenActionException from "../exceptions/ForbiddenActionException";
 import MissingParametersException from "../exceptions/MissingParametersException";
+import { ISearchCriteria } from "../interfaces/searchCriteria";
+import { parseSearchCriteriaToTypeORMWhereClause } from "../utils/SearchCriteriaParser";
 import BaseService from "./baseService";
 
 type BoatFKs = { shipyard: string, boatType: string, port: string };
@@ -27,8 +29,32 @@ class BoatService extends BaseService<Boat> {
         super(Boat);
     }
 
-    public async getAll() {
-        const boats = await this.repository.find({ relations: ["user", "shipyard", "boatType", "ratings", "comments", "port"] });
+    public async getAll(skip: number = 0, take: number = 40, searchParams: ISearchCriteria[] = []) {
+        const commonOptions = {
+            take: take,
+                skip: skip,
+                relations: [
+                    "user", 
+                    "shipyard", 
+                    "boatType", 
+                    "ratings", 
+                    "comments", 
+                    "port"
+                ]
+        }
+
+        let boats = [];
+        if (searchParams.length > 0) {
+            console.log(searchParams);
+            boats = await this.repository.find({
+                ...commonOptions,
+                where: parseSearchCriteriaToTypeORMWhereClause(searchParams),
+            })
+        } else {
+            boats = await this.repository.find({
+                ...commonOptions
+            });
+        }
         return boats;
     }
 
@@ -91,7 +117,7 @@ class BoatService extends BaseService<Boat> {
     }
 
     public async getByUserId(userId: string) {
-        const entity = await this.repository.find({ where: { user: userId }, relations: ["user", "port", "shipyard", "boatType", "ratings", "comments", "rentals", "rentals.renter"], order: { createdAt: "ASC" } } );
+        const entity = await this.repository.find({ where: { user: userId }, relations: ["user", "port", "shipyard", "boatType", "ratings", "comments", "rentals", "rentals.renter"], order: { createdAt: "ASC" } });
         if (!entity) {
             throw new EntityNotFoundException<Boat>(Boat);
         }
