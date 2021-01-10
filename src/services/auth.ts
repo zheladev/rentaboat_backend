@@ -8,14 +8,18 @@ import MissingParametersException from "../exceptions/MissingParametersException
 import WrongPasswordException from "../exceptions/WrongPasswordException";
 import DataStoredInToken from "../interfaces/dataStoredInToken";
 import TokenData from "../interfaces/tokenData";
-import UserService from "./user";
 import * as jwt from 'jsonwebtoken';
 import HttpException from "../exceptions/HttpException";
 import EmailAlreadyInUseException from "../exceptions/EmailAlreadyInUseException";
+import BaseService from "./baseService";
 
 
-class AuthenticationService extends UserService {
+class AuthenticationService extends BaseService<User> {
     private userTypeRepository = getRepository(UserType);
+
+    constructor() {
+        super(User);
+    }
 
     public async logIn( {username, password}: LoginDto): Promise<{token: TokenData, user: User}> {
         const user = await this.validateLoginData(username, password);

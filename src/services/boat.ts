@@ -28,7 +28,7 @@ class BoatService extends BaseService<Boat> {
     }
 
     public async getAll() {
-        const boats = await this.repository.find({ relations: ["user", "shipyard", "boatType", "ratings", "comments"] });
+        const boats = await this.repository.find({ relations: ["user", "shipyard", "boatType", "ratings", "comments", "port"] });
         return boats;
     }
 
