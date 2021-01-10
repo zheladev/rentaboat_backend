@@ -2,8 +2,6 @@
 export enum SearchCriteriaOperations {
     EqualTo = ":",
     Not = "<>",
-    And = "AND",
-    Or = "OR",
     GreaterThan = ">",
     GreaterThanOrEqualTo = ">:",
     LowerThan = "<",
