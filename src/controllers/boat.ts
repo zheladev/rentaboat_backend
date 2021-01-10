@@ -39,7 +39,7 @@ class BoatController implements Controller {
         const skip = Number(request.query.page as string) || 0;
         const searchCriteriaArr: ISearchCriteria[] = parseSearchCriteriaStr(rawQueryParams);
         try {
-            const boats = await this.boatService.getAll(skip, take, searchCriteriaArr);
+            const boats = await this.boatService.getAllPaginated(skip, take, searchCriteriaArr);
             response.send(boats)
         } catch (error) {
             next(error);

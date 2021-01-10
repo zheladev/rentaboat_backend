@@ -29,32 +29,41 @@ class BoatService extends BaseService<Boat> {
         super(Boat);
     }
 
-    public async getAll(skip: number = 0, take: number = 40, searchParams: ISearchCriteria[] = []) {
+    public async getAllPaginated(skip: number = 0, take: number = 40, searchParams: ISearchCriteria[] = []) {
         const commonOptions = {
             take: take,
-                skip: skip,
-                relations: [
-                    "user", 
-                    "shipyard", 
-                    "boatType", 
-                    "ratings", 
-                    "comments", 
-                    "port"
-                ]
+            skip: skip * take,
+            relations: [
+                "user",
+                "shipyard",
+                "boatType",
+                "ratings",
+                "comments",
+                "port"
+            ]
         }
 
         let boats = [];
+        let count = 0;
         if (searchParams.length > 0) {
+            const whereParams = parseSearchCriteriaToTypeORMWhereClause(searchParams);
             boats = await this.repository.find({
                 ...commonOptions,
-                where: parseSearchCriteriaToTypeORMWhereClause(searchParams),
+                where: whereParams,
+            })
+            count = await this.repository.count({
+                where: whereParams,
             })
         } else {
             boats = await this.repository.find({
                 ...commonOptions
             });
+            count = await this.repository.count();
         }
-        return boats;
+        return {
+            data: boats,
+            total_pages: count/take
+        };
     }
 
     public async updateWithUser(id: string, boatData: Partial<CreateBoatDto>, user: User) {
