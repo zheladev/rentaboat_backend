@@ -21,7 +21,7 @@ export const parseSearchCriteriaToTypeORMWhereClause = (sca: ISearchCriteria[]) 
 }
 
 export const parseSearchCriteriaStr = (rawStr: string) => {
-    const regex: RegExp = /(\w+?)(:|<>|>:|<:|<|>)([\w'-_]+?|[0-9]+?),/g;
+    const regex: RegExp = /(\w+?)(:|<>|>:|<:|<|>)([\w'-_\ ]+?|[0-9]+?),/g;
 
     const searchCriteriaStrArr: RegExpMatchArray[] = [...rawStr.matchAll(regex)];
     const searchCriteriaArr: ISearchCriteria[] = searchCriteriaStrArr.map(sc => {

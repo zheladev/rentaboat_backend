@@ -45,7 +45,6 @@ class BoatService extends BaseService<Boat> {
 
         let boats = [];
         if (searchParams.length > 0) {
-            console.log(searchParams);
             boats = await this.repository.find({
                 ...commonOptions,
                 where: parseSearchCriteriaToTypeORMWhereClause(searchParams),

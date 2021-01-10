@@ -37,7 +37,6 @@ class BoatController implements Controller {
         const rawQueryParams = request.query.search as string || '';
         const take = Number(request.query.limit as string) || 10;
         const skip = Number(request.query.page as string) || 0;
-        console.log(rawQueryParams);
         const searchCriteriaArr: ISearchCriteria[] = parseSearchCriteriaStr(rawQueryParams);
         try {
             const boats = await this.boatService.getAll(skip, take, searchCriteriaArr);
