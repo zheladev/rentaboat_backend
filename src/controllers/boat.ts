@@ -35,7 +35,7 @@ class BoatController implements Controller {
     }
     private getAllBoats = async (request: Request, response: Response, next: NextFunction) => {
         const rawQueryParams = request.query.search as string || '';
-        const take = Number(request.query.limit as string) || 10;
+        const take = Number(request.query.limit as string) || 15;
         const skip = Number(request.query.page as string) || 0;
         const searchCriteriaArr: ISearchCriteria[] = parseSearchCriteriaStr(rawQueryParams);
         try {
