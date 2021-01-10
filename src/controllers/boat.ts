@@ -2,7 +2,6 @@ import { NextFunction, Request, Response, Router } from "express";
 import CreateBoatDto from "../dtos/createBoat";
 import PostCommentDTO from "../dtos/postComment";
 import PostRatingDTO from "../dtos/postRating";
-import Comment from "../entities/comment";
 import User from "../entities/user";
 import Controller from "../interfaces/controller";
 import RequestWithUser from "../interfaces/requestWithuser";
@@ -33,13 +32,17 @@ class BoatController implements Controller {
             .patch(`${this.path}/:id`, validateUUID, this.modifyBoat)
             .delete(`${this.path}/:id`, validateUUID, this.deleteBoat)
     }
+
     private getAllBoats = async (request: Request, response: Response, next: NextFunction) => {
         const rawQueryParams = request.query.search as string || '';
         const take = Number(request.query.limit as string) || 15;
         const skip = Number(request.query.page as string) || 0;
+        const startDate = (request.query.startDate as string) || null;
+        const endDate = (request.query.endDate as string) || null;
+
         const searchCriteriaArr: ISearchCriteria[] = parseSearchCriteriaStr(rawQueryParams);
         try {
-            const boats = await this.boatService.getAllPaginated(skip, take, searchCriteriaArr);
+            const boats = await this.boatService.getAllPaginated(skip, take, startDate, endDate, searchCriteriaArr);
             response.send(boats)
         } catch (error) {
             next(error);

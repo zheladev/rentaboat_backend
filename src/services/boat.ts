@@ -1,4 +1,4 @@
-import { Entity, getRepository } from "typeorm";
+import { getRepository } from "typeorm";
 import CreateBoatDto from "../dtos/createBoat";
 import PostCommentDTO from "../dtos/postComment";
 import PostRatingDTO from "../dtos/postRating";
@@ -6,6 +6,7 @@ import Boat from "../entities/boat";
 import Comment from "../entities/comment";
 import Port from "../entities/port";
 import Rating from "../entities/rating";
+import { PostgresTimeInterval } from "../entities/rental";
 import Shipyard from "../entities/shipyard";
 import BoatType from "../entities/types/boatType";
 import User from "../entities/user";
@@ -29,34 +30,51 @@ class BoatService extends BaseService<Boat> {
         super(Boat);
     }
 
-    public async getAllPaginated(skip: number = 0, take: number = 40, searchParams: ISearchCriteria[] = []) {
-        const commonOptions = {
-            take: take,
-            skip: skip * take,
+    public async getAllPaginated(skip: number = 0, take: number = 40, startDate = null, endDate = null, searchParams: ISearchCriteria[] = []) {
+        const relationsOptions = {
             relations: [
                 "user",
                 "shipyard",
                 "boatType",
                 "ratings",
                 "comments",
-                "port"
+                "port",
+                "rentals"
             ]
+        }
+
+        const paginationOptions = {
+            take: take,
+            skip: skip * take,
         }
 
         let boats = [];
         let count = 0;
         if (searchParams.length > 0) {
             const whereParams = parseSearchCriteriaToTypeORMWhereClause(searchParams);
-            boats = await this.repository.find({
-                ...commonOptions,
-                where: whereParams,
-            })
-            count = await this.repository.count({
-                where: whereParams,
-            })
+            if (startDate && endDate) {
+                boats = await this.repository.find({
+                    ...relationsOptions,
+                    where: whereParams,
+                })
+                count = await this.repository.count({
+                    where: whereParams,
+                })
+                boats = boats.filter(this.boatAvailabilityFilter(startDate, endDate));
+            } else {
+                boats = await this.repository.find({
+                    ...relationsOptions,
+                    ...paginationOptions,
+                    where: whereParams,
+                })
+                count = await this.repository.count({
+                    where: whereParams,
+                })
+            }
         } else {
             boats = await this.repository.find({
-                ...commonOptions
+                ...relationsOptions,
+                ...paginationOptions
             });
             count = await this.repository.count();
         }
@@ -64,6 +82,22 @@ class BoatService extends BaseService<Boat> {
             data: boats,
             totalPages: count/take
         };
+    }
+
+    private boatAvailabilityFilter(startDate, endDate) {
+        return (boat: Boat) => {
+            let isRented = false;
+            for(let i = 0; i < boat.rentals.length && !isRented; i++) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const startR = new Date(boat.rentals[i].startDate);
+                const endR = new Date(boat.rentals[i].startDate);
+                endR.setDate(startR.getDate() + Number((boat.rentals[i].durationInDays as PostgresTimeInterval).days));
+                
+                isRented =  (endR >= start && startR <= end);
+            }
+            return !isRented;
+        }
     }
 
     public async updateWithUser(id: string, boatData: Partial<CreateBoatDto>, user: User) {
