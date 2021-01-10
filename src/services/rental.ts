@@ -15,9 +15,6 @@ class RentalService extends BaseService<Rental> {
 
     public async getByBoatId(boatId: string) {
         const rentals = await this.repository.find({ where: { boat: boatId }, relations: ["renter"] });
-        if (rentals.length < 1) {
-            throw new EntityNotFoundException<Rental>(Rental);
-        }
 
         return rentals;
     }

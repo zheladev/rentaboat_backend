@@ -95,7 +95,6 @@ class BoatService extends BaseService<Boat> {
         });
 
         await this.repository.save(createdBoat);
-        //might not have id param
         return await this.repository.findOne(createdBoat.id, { relations: ["user", "port", "shipyard", "boatType", "ratings", "comments", "rentals", "rentals.renter"] });
     }
 
@@ -123,7 +122,6 @@ class BoatService extends BaseService<Boat> {
         return entity;
     }
 
-    //TODO: add endpoint
     public async postComment(boatId: string, commentData: PostCommentDTO, user: User) {
         const boat = await this.repository.findOne(boatId);
 
@@ -141,7 +139,6 @@ class BoatService extends BaseService<Boat> {
         return this.commentRepository.findOne(createdComment.id);
     }
 
-    //TODO: add endpoint
     public async postRating(boatId: string, ratingData: PostRatingDTO, user: User) {
         const boat = await this.repository.findOne(boatId);
 
