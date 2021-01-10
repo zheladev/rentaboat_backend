@@ -9,8 +9,8 @@ class BaseService<T> {
         this.repository = getRepository(entityClass);
     }
 
-    public async getAll() {
-        return await this.repository.find();
+    public async getAll(skip: number = 0, take: number = 40) {
+        return await this.repository.find({ skip: skip, take: take});
     }
 
     public async getById(id: string) {
