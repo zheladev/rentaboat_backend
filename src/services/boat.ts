@@ -62,7 +62,7 @@ class BoatService extends BaseService<Boat> {
         }
         return {
             data: boats,
-            total_pages: count/take
+            totalPages: count/take
         };
     }
 
