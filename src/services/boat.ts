@@ -19,7 +19,9 @@ import { ISearchCriteria } from "../interfaces/searchCriteria";
 import { parseFile } from "../utils/fileUpload";
 import { parseSearchCriteriaToTypeORMWhereClause } from "../utils/SearchCriteriaParser";
 import BaseService from "./baseService";
+import { getFileRepository } from "../repository/fileRepository";
 import HttpException from "../exceptions/HttpException";
+import WrongFileTypeException from "../exceptions/WrongFileTypeException";
 
 type BoatFKs = { shipyard: string, boatType: string, port: string };
 
@@ -29,6 +31,7 @@ class BoatService extends BaseService<Boat> {
     private boatTypeRepository = getRepository(BoatType);
     private commentRepository = getRepository(Comment);
     private ratingRepository = getRepository(Rating);
+    private fileRepository = getFileRepository('/boats');
 
     constructor() {
         super(Boat);
@@ -129,7 +132,14 @@ class BoatService extends BaseService<Boat> {
 
     public async create(boatData: CreateBoatDto, user: User) {
         const { shipyard, boatType, port }: BoatFKs = boatData;
+        const base64Data = boatData.base64Data || undefined;
+        delete boatData.base64Data;
+
         const lowercaseShipyard = shipyard.toLowerCase();
+
+        if(!this.fileRepository.validFileType(base64Data)) {
+            throw new WrongFileTypeException(this.fileRepository.fileType(base64Data));
+        }
 
         const shipyardEntity = await this.getShipyardEntity(lowercaseShipyard);
 
@@ -141,8 +151,8 @@ class BoatService extends BaseService<Boat> {
             throw new MissingParametersException();
         }
 
-        const base64Data = boatData.base64Data || undefined;
-        delete boatData.base64Data;
+        
+        
 
         const createdBoat = await this.repository.create({
             ...boatData,
@@ -155,19 +165,22 @@ class BoatService extends BaseService<Boat> {
         await this.repository.save(createdBoat);
         const savedBoat = await this.repository.findOne(createdBoat.id, { relations: ["user", "port", "shipyard", "boatType", "ratings", "comments", "rentals", "rentals.renter"] });
 
-        //Save file if uploaded
+        let imgPath = null;
+
         if (base64Data !== undefined) {
             try {
-                const baseDir = './public/boats';
-                const fileName = savedBoat.id;
-                const file: IFile = parseFile(base64Data);
-                fs.writeFile(`${baseDir}/${fileName}.${file.fileFormat}`, file.base64Data, { encoding: 'base64' }, () => {});
+                imgPath = this.fileRepository.save(savedBoat.id, base64Data);
             } catch (e) {
                 throw e;
             }
+
+            if (imgPath !== null) {
+                savedBoat.path = imgPath;
+                await this.repository.save(savedBoat);
+            }
         }
 
-        return savedBoat;
+        return await savedBoat;
     }
 
     public async delete(id: string) {

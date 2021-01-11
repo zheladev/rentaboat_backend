@@ -28,10 +28,12 @@ class App {
         this.app = express();
         this.port = port;
         
-        this.enableCORS()
+        this.enableCORS();
+        this.app.use(express.static('public'));
         this.initializeMiddlewares(middlewares);
         this.initializeControllers(controllers);
         this.initializeErrorHandling();
+         //expose public folder
     }
 
     enableCORS() {

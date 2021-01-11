@@ -55,6 +55,9 @@ class Boat {
     @Column({ name: "number_of_bathrooms" })
     public numberOfBathrooms: number;
 
+    @Column({ name: "file_path", nullable: true })
+    public path?: string;
+
     @CreateDateColumn({
         name: "created_at",
         type: "timestamp",

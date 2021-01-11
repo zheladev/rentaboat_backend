@@ -35,7 +35,7 @@ import SupportTicketController from './controllers/supportTicket';
             new SupportTicketController(),
         ],
         [
-            bodyParser.json(),
+            bodyParser.json({limit: '2mb'}),
             loggerMiddleware,
             cookieParser(),
         ],
