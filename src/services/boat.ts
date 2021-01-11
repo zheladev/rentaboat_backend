@@ -10,12 +10,18 @@ import { PostgresTimeInterval } from "../entities/rental";
 import Shipyard from "../entities/shipyard";
 import BoatType from "../entities/types/boatType";
 import User from "../entities/user";
+import * as fs from 'fs';
 import EntityNotFoundException from "../exceptions/EntityNotFoundException";
 import ForbiddenActionException from "../exceptions/ForbiddenActionException";
 import MissingParametersException from "../exceptions/MissingParametersException";
+import { IFile } from "../interfaces/file";
 import { ISearchCriteria } from "../interfaces/searchCriteria";
+import { parseFile } from "../utils/fileUpload";
 import { parseSearchCriteriaToTypeORMWhereClause } from "../utils/SearchCriteriaParser";
 import BaseService from "./baseService";
+import { getFileRepository } from "../repository/fileRepository";
+import HttpException from "../exceptions/HttpException";
+import WrongFileTypeException from "../exceptions/WrongFileTypeException";
 
 type BoatFKs = { shipyard: string, boatType: string, port: string };
 
@@ -25,6 +31,7 @@ class BoatService extends BaseService<Boat> {
     private boatTypeRepository = getRepository(BoatType);
     private commentRepository = getRepository(Comment);
     private ratingRepository = getRepository(Rating);
+    private fileRepository = getFileRepository('/boats');
 
     constructor() {
         super(Boat);
@@ -72,29 +79,37 @@ class BoatService extends BaseService<Boat> {
                 })
             }
         } else {
-            boats = await this.repository.find({
-                ...relationsOptions,
-                ...paginationOptions
-            });
-            count = await this.repository.count();
+            if (startDate && endDate) {
+                boats = await this.repository.find({
+                    ...relationsOptions,
+                });
+                count = await this.repository.count();
+                boats = boats.filter(this.boatAvailabilityFilter(startDate, endDate));
+            } else {
+                boats = await this.repository.find({
+                    ...relationsOptions,
+                    ...paginationOptions
+                });
+                count = await this.repository.count();
+            }
         }
         return {
             data: boats,
-            totalPages: count/take
+            totalPages: count / take
         };
     }
 
     private boatAvailabilityFilter(startDate, endDate) {
         return (boat: Boat) => {
             let isRented = false;
-            for(let i = 0; i < boat.rentals.length && !isRented; i++) {
+            for (let i = 0; i < boat.rentals.length && !isRented; i++) {
                 const start = new Date(startDate);
                 const end = new Date(endDate);
                 const startR = new Date(boat.rentals[i].startDate);
                 const endR = new Date(boat.rentals[i].startDate);
                 endR.setDate(startR.getDate() + Number((boat.rentals[i].durationInDays as PostgresTimeInterval).days));
-                
-                isRented =  (endR >= start && startR <= end);
+
+                isRented = (endR >= start && startR <= end);
             }
             return !isRented;
         }
@@ -117,7 +132,14 @@ class BoatService extends BaseService<Boat> {
 
     public async create(boatData: CreateBoatDto, user: User) {
         const { shipyard, boatType, port }: BoatFKs = boatData;
+        const base64Data = boatData.base64Data || undefined;
+        delete boatData.base64Data;
+
         const lowercaseShipyard = shipyard.toLowerCase();
+
+        if(!this.fileRepository.validFileType(base64Data)) {
+            throw new WrongFileTypeException(this.fileRepository.fileType(base64Data));
+        }
 
         const shipyardEntity = await this.getShipyardEntity(lowercaseShipyard);
 
@@ -129,6 +151,9 @@ class BoatService extends BaseService<Boat> {
             throw new MissingParametersException();
         }
 
+        
+        
+
         const createdBoat = await this.repository.create({
             ...boatData,
             shipyard: shipyardEntity,
@@ -138,7 +163,24 @@ class BoatService extends BaseService<Boat> {
         });
 
         await this.repository.save(createdBoat);
-        return await this.repository.findOne(createdBoat.id, { relations: ["user", "port", "shipyard", "boatType", "ratings", "comments", "rentals", "rentals.renter"] });
+        const savedBoat = await this.repository.findOne(createdBoat.id, { relations: ["user", "port", "shipyard", "boatType", "ratings", "comments", "rentals", "rentals.renter"] });
+
+        let imgPath = null;
+
+        if (base64Data !== undefined) {
+            try {
+                imgPath = this.fileRepository.save(savedBoat.id, base64Data);
+            } catch (e) {
+                throw e;
+            }
+
+            if (imgPath !== null) {
+                savedBoat.path = imgPath;
+                await this.repository.save(savedBoat);
+            }
+        }
+
+        return await savedBoat;
     }
 
     public async delete(id: string) {
