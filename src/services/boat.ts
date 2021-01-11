@@ -72,29 +72,37 @@ class BoatService extends BaseService<Boat> {
                 })
             }
         } else {
-            boats = await this.repository.find({
-                ...relationsOptions,
-                ...paginationOptions
-            });
-            count = await this.repository.count();
+            if (startDate && endDate) {
+                boats = await this.repository.find({
+                    ...relationsOptions,
+                });
+                count = await this.repository.count();
+                boats = boats.filter(this.boatAvailabilityFilter(startDate, endDate));
+            } else {
+                boats = await this.repository.find({
+                    ...relationsOptions,
+                    ...paginationOptions
+                });
+                count = await this.repository.count();
+            }
         }
         return {
             data: boats,
-            totalPages: count/take
+            totalPages: count / take
         };
     }
 
     private boatAvailabilityFilter(startDate, endDate) {
         return (boat: Boat) => {
             let isRented = false;
-            for(let i = 0; i < boat.rentals.length && !isRented; i++) {
+            for (let i = 0; i < boat.rentals.length && !isRented; i++) {
                 const start = new Date(startDate);
                 const end = new Date(endDate);
                 const startR = new Date(boat.rentals[i].startDate);
                 const endR = new Date(boat.rentals[i].startDate);
                 endR.setDate(startR.getDate() + Number((boat.rentals[i].durationInDays as PostgresTimeInterval).days));
-                
-                isRented =  (endR >= start && startR <= end);
+
+                isRented = (endR >= start && startR <= end);
             }
             return !isRented;
         }
