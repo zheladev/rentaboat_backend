@@ -34,6 +34,9 @@ class CreateBoatDto {
 
     @IsNumber()
     public numberOfBathrooms;
+
+    @IsString()
+    public base64Data?;
 }
 
 export default CreateBoatDto;

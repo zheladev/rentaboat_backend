@@ -10,12 +10,16 @@ import { PostgresTimeInterval } from "../entities/rental";
 import Shipyard from "../entities/shipyard";
 import BoatType from "../entities/types/boatType";
 import User from "../entities/user";
+import * as fs from 'fs';
 import EntityNotFoundException from "../exceptions/EntityNotFoundException";
 import ForbiddenActionException from "../exceptions/ForbiddenActionException";
 import MissingParametersException from "../exceptions/MissingParametersException";
+import { IFile } from "../interfaces/file";
 import { ISearchCriteria } from "../interfaces/searchCriteria";
+import { parseFile } from "../utils/fileUpload";
 import { parseSearchCriteriaToTypeORMWhereClause } from "../utils/SearchCriteriaParser";
 import BaseService from "./baseService";
+import HttpException from "../exceptions/HttpException";
 
 type BoatFKs = { shipyard: string, boatType: string, port: string };
 
@@ -137,6 +141,9 @@ class BoatService extends BaseService<Boat> {
             throw new MissingParametersException();
         }
 
+        const base64Data = boatData.base64Data || undefined;
+        delete boatData.base64Data;
+
         const createdBoat = await this.repository.create({
             ...boatData,
             shipyard: shipyardEntity,
@@ -146,7 +153,21 @@ class BoatService extends BaseService<Boat> {
         });
 
         await this.repository.save(createdBoat);
-        return await this.repository.findOne(createdBoat.id, { relations: ["user", "port", "shipyard", "boatType", "ratings", "comments", "rentals", "rentals.renter"] });
+        const savedBoat = await this.repository.findOne(createdBoat.id, { relations: ["user", "port", "shipyard", "boatType", "ratings", "comments", "rentals", "rentals.renter"] });
+
+        //Save file if uploaded
+        if (base64Data !== undefined) {
+            try {
+                const baseDir = './public/boats';
+                const fileName = savedBoat.id;
+                const file: IFile = parseFile(base64Data);
+                fs.writeFile(`${baseDir}/${fileName}.${file.fileFormat}`, file.base64Data, { encoding: 'base64' }, () => {});
+            } catch (e) {
+                throw e;
+            }
+        }
+
+        return savedBoat;
     }
 
     public async delete(id: string) {
