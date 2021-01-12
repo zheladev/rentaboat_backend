@@ -4,7 +4,7 @@ import PostCommentDTO from "../dtos/postComment";
 import PostRatingDTO from "../dtos/postRating";
 import User from "../entities/user";
 import Controller from "../interfaces/controller";
-import RequestWithUser from "../interfaces/requestWithuser";
+import RequestWithUser from "../interfaces/requestWithUser";
 import { ISearchCriteria } from "../interfaces/searchCriteria";
 import { authMiddleware } from "../middleware/auth";
 import validateUUID from "../middleware/validation";
