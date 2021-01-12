@@ -116,3 +116,5 @@ dist
 public/
 
 docker.env
+out.wmv
+output.ppm
