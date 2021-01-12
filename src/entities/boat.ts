@@ -55,7 +55,7 @@ class Boat {
     @Column({ name: "number_of_bathrooms" })
     public numberOfBathrooms: number;
 
-    @Column({ name: "file_path", default: '/boats/default.png' })
+    @Column({ name: "file_path", default: '/img/boats/default.jpg' })
     public path: string;
 
     @CreateDateColumn({

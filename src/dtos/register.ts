@@ -21,6 +21,9 @@ class RegisterDto {
 
     @IsString()
     public password: string;
+
+    @IsString()
+    public base64Data?;
 }
 
 export default RegisterDto;
