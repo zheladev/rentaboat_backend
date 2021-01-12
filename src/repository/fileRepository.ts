@@ -11,12 +11,12 @@ enum acceptedFileTypes {
 export const getFileRepository = (relativePath: string) => {
     return {
         save: (filename: string, base64Data: string, opts = {}) => {
-            const baseDir = './public';
+            const baseDir = process.env.BASE_IMG_DIR;
             const fileName = filename;
             const file: IFile = parseFile(base64Data);
-            const path = `${baseDir}${relativePath}/${fileName}.${file.fileFormat}`;
+            const path = `${baseDir}${relativePath}${fileName}.${file.fileFormat}`;
             fs.writeFile(path, file.base64Data, { encoding: 'base64' }, () => { });
-            return `${relativePath}/${fileName}.${file.fileFormat}`;
+            return path.replace('./public', '');
         },
         fileType: (base64Data: string) => {
             return parseFile(base64Data).fileFormat;

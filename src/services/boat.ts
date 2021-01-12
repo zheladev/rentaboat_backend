@@ -27,7 +27,7 @@ class BoatService extends BaseService<Boat> {
     private boatTypeRepository = getRepository(BoatType);
     private commentRepository = getRepository(Comment);
     private ratingRepository = getRepository(Rating);
-    private fileRepository = getFileRepository('/boats');
+    private fileRepository = getFileRepository(process.env.BOAT_IMG_DIR);
 
     constructor() {
         super(Boat);
