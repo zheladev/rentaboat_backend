@@ -6,6 +6,7 @@ enum acceptedFileTypes {
     PNG = 'png',
     JPG = 'jpg',
     JPEG = 'jpeg',
+    SVG = 'svg'
 }
 
 export const getFileRepository = (relativePath: string) => {
