@@ -3,7 +3,7 @@ import BoatType from "../entities/types/boatType";
 import Controller from "../interfaces/controller";
 import { authMiddleware } from "../middleware/auth";
 import validateUUID from "../middleware/validation";
-import BoatTypeService from "../services/boattype";
+import BoatTypeService from "../services/boatType";
 
 
 class BoatTypeController implements Controller {

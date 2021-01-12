@@ -1,10 +1,9 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { create } from "ts-node";
 import CreateRentalDTO from "../dtos/createRental";
 import Rental from "../entities/rental";
 import User from "../entities/user";
 import Controller from "../interfaces/controller";
-import RequestWithUser from "../interfaces/requestWithuser";
+import RequestWithUser from "../interfaces/requestWithUser";
 import { authMiddleware } from "../middleware/auth";
 import validateUUID from "../middleware/validation";
 import RentalService from "../services/rental";

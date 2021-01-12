@@ -3,7 +3,7 @@ import CreateSupportTicketDTO from "../dtos/createSupportTicket";
 import SupportTicket from "../entities/supportTicket";
 import User from "../entities/user";
 import Controller from "../interfaces/controller";
-import RequestWithUser from "../interfaces/requestWithuser";
+import RequestWithUser from "../interfaces/requestWithUser";
 import { authMiddleware } from "../middleware/auth";
 import validateUUID from "../middleware/validation";
 import SupportTicketService from "../services/supportTicket";

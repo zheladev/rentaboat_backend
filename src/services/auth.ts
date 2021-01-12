@@ -12,10 +12,13 @@ import * as jwt from 'jsonwebtoken';
 import HttpException from "../exceptions/HttpException";
 import EmailAlreadyInUseException from "../exceptions/EmailAlreadyInUseException";
 import BaseService from "./baseService";
+import { getFileRepository } from "../repository/fileRepository";
+import WrongFileTypeException from "../exceptions/WrongFileTypeException";
 
 
 class AuthenticationService extends BaseService<User> {
     private userTypeRepository = getRepository(UserType);
+    private fileRepository = getFileRepository(process.env.USER_IMG_DIR)
 
     constructor() {
         super(User);
@@ -32,6 +35,13 @@ class AuthenticationService extends BaseService<User> {
 
     public async register(userData: RegisterDto): Promise<{token: TokenData, user: User}> {
         try {
+            const base64Data = userData.base64Data || undefined;
+            delete userData.base64Data;
+
+            if(!this.fileRepository.validFileType(base64Data)) {
+                throw new WrongFileTypeException(this.fileRepository.fileType(base64Data));
+            }
+            
             const userType = await this.userTypeRepository.findOne({ intValue: userData.userType });
             await this.validateRegistrationData(userData, userType);
 
@@ -40,13 +50,30 @@ class AuthenticationService extends BaseService<User> {
                 userType: userType
             });
             await this.repository.save(createdUser);
+
+            const savedUser = await this.repository.findOne(createdUser.id);
+
+            let imgPath = null;
+
+            if (base64Data !== undefined) {
+                try {
+                    imgPath = this.fileRepository.save(savedUser.id, base64Data);
+                } catch (e) {
+                    throw e;
+                }
+                
+                if (imgPath !== null) {
+                    savedUser.path = imgPath;
+                    await this.repository.save(savedUser);
+                }
+            }
+
             const tokenData = this.createToken(createdUser);
             return {
                 token: tokenData,
-                user: createdUser,
+                user: savedUser,
             }
         } catch (error) {
-            //TODO
             throw error;
         }
     }
@@ -82,7 +109,6 @@ class AuthenticationService extends BaseService<User> {
             throw new ForbiddenActionException("Register non registrable user.");
         }
 
-        //TODO: create username already in use exception
         if (await this.repository.findOne({ username: userData.username})) {
             throw new HttpException(400, "Username already in use");
         }
