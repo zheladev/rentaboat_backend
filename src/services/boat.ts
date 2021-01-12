@@ -10,17 +10,13 @@ import { PostgresTimeInterval } from "../entities/rental";
 import Shipyard from "../entities/shipyard";
 import BoatType from "../entities/types/boatType";
 import User from "../entities/user";
-import * as fs from 'fs';
 import EntityNotFoundException from "../exceptions/EntityNotFoundException";
 import ForbiddenActionException from "../exceptions/ForbiddenActionException";
 import MissingParametersException from "../exceptions/MissingParametersException";
-import { IFile } from "../interfaces/file";
 import { ISearchCriteria } from "../interfaces/searchCriteria";
-import { parseFile } from "../utils/fileUpload";
 import { parseSearchCriteriaToTypeORMWhereClause } from "../utils/SearchCriteriaParser";
 import BaseService from "./baseService";
 import { getFileRepository } from "../repository/fileRepository";
-import HttpException from "../exceptions/HttpException";
 import WrongFileTypeException from "../exceptions/WrongFileTypeException";
 
 type BoatFKs = { shipyard: string, boatType: string, port: string };
