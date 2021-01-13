@@ -4,6 +4,7 @@
   "description": "Rent a boat backend service",
   "main": "index.js",
   "scripts": {
+    "generate-docs": "jsdoc -c ./jsdoc.conf.json",
     "test": "mocha -r ts-node/register '**/tests/**/*.ts'",
     "dev": "ts-node ./src/server.ts",
     "dev:watch": "nodemon",
@@ -52,7 +53,9 @@
     "@types/pg": "^7.14.5",
     "@types/reflect-metadata": "^0.1.0",
     "@types/sinon": "^9.0.10",
+    "better-docs": "^2.3.2",
     "chai": "^4.2.0",
+    "jsdoc": "^3.6.6",
     "mocha": "^8.2.1",
     "sinon": "^9.2.3"
   }

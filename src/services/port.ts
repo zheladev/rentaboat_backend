@@ -5,6 +5,7 @@ import BaseService from "./baseService";
 /**
  * Port service
  *
+ * @category Services
  * @class PortService
  * @extends {BaseService<Port>}
  */

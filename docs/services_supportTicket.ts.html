@@ -1,0 +1,222 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> services/supportTicket.ts</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="App.html">App</a></li></ul></div><div class="category"><h2>Services</h2><h3>Classes</h3><ul><li><a href="AuthenticationService.html">AuthenticationService</a></li><li><a href="BaseService.html">BaseService</a></li><li><a href="BoatService.html">BoatService</a></li><li><a href="BoatTypeService.html">BoatTypeService</a></li><li><a href="ChatService.html">ChatService</a></li><li><a href="PortService.html">PortService</a></li><li><a href="RentalService.html">RentalService</a></li><li><a href="ShipyardService.html">ShipyardService</a></li><li><a href="SupportTicketService.html">SupportTicketService</a></li><li><a href="UserService.html">UserService</a></li><li><a href="UserTypeService.html">UserTypeService</a></li></ul></div><div class="category"><h2>Utils</h2><h3>Global</h3><ul><li><a href="global.html#getEnumKeyByEnumValue">getEnumKeyByEnumValue</a></li><li><a href="global.html#getFileRepository">getFileRepository</a></li><li><a href="global.html#parseFile">parseFile</a></li><li><a href="global.html#parseSearchCriteriaStr">parseSearchCriteriaStr</a></li><li><a href="global.html#parseSearchCriteriaToTypeORMWhereClause">parseSearchCriteriaToTypeORMWhereClause</a></li><li><a href="global.html#repositoryStubConstructor">repositoryStubConstructor</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>services/supportTicket.ts</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { Entity, getRepository } from "typeorm";
+import CreateSupportTicketDTO from "../dtos/createSupportTicket";
+import Rental from "../entities/rental";
+import SupportTicket from "../entities/supportTicket";
+import SupportTicketType from "../entities/types/supportTicketType";
+import User from "../entities/user";
+import EntityNotFoundException from "../exceptions/EntityNotFoundException";
+import ForbiddenActionException from "../exceptions/ForbiddenActionException";
+import BaseService from "./baseService";
+
+/**
+ * SupportTicket service
+ *
+ * @class SupportTicketService
+ * @category Services
+ * @extends {BaseService&lt;SupportTicket>}
+ */
+class SupportTicketService extends BaseService&lt;SupportTicket> {
+    private rentalRepository = getRepository(Rental);
+    private supportTicketTypeRepository = getRepository(SupportTicketType);
+
+    constructor() {
+        super(SupportTicket)
+    }
+
+    /**
+     *  Returns created SupportTicket linked to given User
+     *
+     * @param {CreateSupportTicketDTO} supportTicketData
+     * @param {User} user
+     * @return {*} 
+     * @memberof SupportTicketService
+     */
+    public async create(supportTicketData: CreateSupportTicketDTO, user: User) {
+        const rental = await this.rentalRepository.findOne(supportTicketData.rental);
+        if (!rental) {
+            throw new EntityNotFoundException&lt;Rental>(Rental);
+        }
+
+        const supportTicketType = await this.supportTicketTypeRepository.findOne({
+            where: {
+                name: supportTicketData.supportTicketType
+            }
+        });
+        if (!supportTicketType) {
+            throw new EntityNotFoundException&lt;SupportTicketType>(SupportTicketType);
+        }
+
+        const createdSupportTicket = await this.repository.create({
+            ...supportTicketData,
+            rental: rental,
+            issuer: user,
+            isAssigned: false,
+            isResolved: false,
+            supportTicketType: supportTicketType,
+        })
+        await this.repository.save(createdSupportTicket);
+
+        return this.repository.findOne(createdSupportTicket.id, { relations: ["issuer", "supportTicketType", "rental"] })
+    }
+
+    /**
+     * Sets matched SupportTicket's isResolved param to true
+     *
+     * @param {string} id
+     * @return {*} 
+     * @memberof SupportTicketService
+     */
+    public async resolveTicket(id: string) {
+        const supportTicket = await this.repository.findOne(id);
+        if (!supportTicket) {
+            throw new EntityNotFoundException&lt;SupportTicket>(SupportTicket);
+        }
+
+        supportTicket.isResolved = true;
+        await this.repository.save(supportTicket);
+
+        return supportTicket;
+    }
+
+    /**
+     * Assigns Support user to matched SupportTicket
+     *
+     * @param {string} id
+     * @param {User} user
+     * @return {*} 
+     * @memberof SupportTicketService
+     */
+    public async assignSupportUser(id: string, user: User) {
+        if (user.userType.intValue > 1) {
+            throw new ForbiddenActionException("Assign support ticket.");
+        }
+
+        const supportTicket = await this.repository.findOne(id);
+        if (!supportTicket) {
+            throw new EntityNotFoundException&lt;SupportTicket>(SupportTicket);
+        }
+
+        supportTicket.isAssigned = true;
+        supportTicket.assignedTo = user;
+        await this.repository.save(supportTicket);
+
+        return supportTicket;
+    }
+}
+
+export default SupportTicketService;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

@@ -12,6 +12,7 @@ import BaseService from "./baseService";
 /**
  * Chat service
  *
+ * @category Services
  * @class ChatService
  * @extends {BaseService<Chat>}
  */

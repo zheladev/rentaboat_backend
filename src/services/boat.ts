@@ -25,6 +25,7 @@ type BoatFKs = { shipyard: string, boatType: string, port: string };
 /**
  * Boat service
  *
+ * @category Services
  * @class BoatService
  * @extends {BaseService<Boat>}
  */

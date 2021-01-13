@@ -5,6 +5,7 @@ import BaseService from "./baseService";
 /**
  * Shipyard service
  *
+ * @category Services
  * @class ShipyardService
  * @extends {BaseService<Shipyard>}
  */

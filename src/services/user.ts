@@ -11,6 +11,7 @@ import UserType from "../entities/types/userType";
  * User service. User creation is handled through AuthService.
  *
  * @class UserService
+ * @category Services
  * @extends {BaseService<User>}
  */
 class UserService extends BaseService<User> {

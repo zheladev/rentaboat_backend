@@ -4,6 +4,7 @@ import BaseService from "./baseService";
 /**
  * BoatType service
  *
+ * @category Services
  * @class BoatTypeService
  * @extends {BaseService<BoatType>}
  */

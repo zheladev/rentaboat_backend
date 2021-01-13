@@ -6,6 +6,7 @@ import BaseService from "./baseService";
  * UserType Service
  *
  * @class UserTypeService
+ * @category Services
  * @extends {BaseService<UserType>}
  */
 class UserTypeService extends BaseService<UserType> {

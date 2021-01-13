@@ -1,0 +1,299 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> services/rental.ts</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="App.html">App</a></li></ul></div><div class="category"><h2>Services</h2><h3>Classes</h3><ul><li><a href="AuthenticationService.html">AuthenticationService</a></li><li><a href="BaseService.html">BaseService</a></li><li><a href="BoatService.html">BoatService</a></li><li><a href="BoatTypeService.html">BoatTypeService</a></li><li><a href="ChatService.html">ChatService</a></li><li><a href="PortService.html">PortService</a></li><li><a href="RentalService.html">RentalService</a></li><li><a href="ShipyardService.html">ShipyardService</a></li><li><a href="SupportTicketService.html">SupportTicketService</a></li><li><a href="UserService.html">UserService</a></li><li><a href="UserTypeService.html">UserTypeService</a></li></ul></div><div class="category"><h2>Utils</h2><h3>Global</h3><ul><li><a href="global.html#getEnumKeyByEnumValue">getEnumKeyByEnumValue</a></li><li><a href="global.html#getFileRepository">getFileRepository</a></li><li><a href="global.html#parseFile">parseFile</a></li><li><a href="global.html#parseSearchCriteriaStr">parseSearchCriteriaStr</a></li><li><a href="global.html#parseSearchCriteriaToTypeORMWhereClause">parseSearchCriteriaToTypeORMWhereClause</a></li><li><a href="global.html#repositoryStubConstructor">repositoryStubConstructor</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>services/rental.ts</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { Between, getRepository, Raw, SelectQueryBuilder } from "typeorm";
+import CreateRentalDTO from "../dtos/createRental";
+import Boat from "../entities/boat";
+import Rental, { PostgresTimeInterval } from "../entities/rental";
+import User from "../entities/user";
+import EntityNotFoundException from "../exceptions/EntityNotFoundException";
+import ForbiddenActionException from "../exceptions/ForbiddenActionException";
+import BaseService from "./baseService";
+
+/**
+ * Rental service
+ *
+ * @category Services
+ * @class RentalService
+ * @extends {BaseService&lt;Rental>}
+ */
+class RentalService extends BaseService&lt;Rental> {
+    private boatRepository = getRepository(Boat);
+    constructor() {
+        super(Rental)
+    }
+
+
+    /**
+     * Returns array of rentals of a boat with given id
+     *
+     * @param {string} boatId
+     * @return {*} 
+     * @memberof RentalService
+     */
+    public async getByBoatId(boatId: string) {
+        const rentals = await this.repository.find({ where: { boat: boatId }, relations: ["renter"] });
+
+        return rentals;
+    }
+
+    /**
+     * Returns rentals of boat with matching user id
+     *
+     * @param {string} userId
+     * @param {User} user
+     * @return {*} 
+     * @memberof RentalService
+     */
+    public async getByOwnerId(userId: string, user: User) {
+        if (!(userId === user.id || user.userType.intValue &lt;= 1)) {
+            throw new ForbiddenActionException("Access owner rentals");
+        }
+
+        //TODO: not sanitized
+        const rentals = await this.repository
+            .createQueryBuilder('rental')
+            .leftJoinAndSelect('rental.boat', 'boat')
+            .leftJoinAndSelect('boat.user', 'user')
+            .where('user.id=:id', { id: userId })
+            .getMany();
+
+
+        return rentals;
+    }
+
+
+    /**
+     * Returns rentals made by matching user
+     *
+     * @param {string} userId
+     * @param {User} user
+     * @param {boolean} [upcoming=true]
+     * @return {*} 
+     * @memberof RentalService
+     */
+    public async getByUserId(userId: string, user: User, upcoming: boolean = true) {
+        if (!(userId === user.id || user.userType.intValue &lt;= 1)) {
+            throw new ForbiddenActionException("Access renter rentals");
+        }
+
+        const where = upcoming ? {renter: userId, startDate: Raw(alias =>`${alias} > NOW()`)} : { renter: userId};
+
+        const rentals = await this.repository.find({
+            where: where,
+            relations: ["boat", "boat.shipyard", "boat.user", "boat.port"],
+            order: { startDate: "ASC" }
+        });
+
+        return rentals;
+    }
+
+    /**
+     * Creates and returns rental with given data
+     *
+     * @param {CreateRentalDTO} rentalData
+     * @param {User} user
+     * @return {*} 
+     * @memberof RentalService
+     */
+    public async create(rentalData: CreateRentalDTO, user: User) {
+        const { boatId } = rentalData;
+
+        const boat = await this.boatRepository.findOne(boatId, { relations: ["rentals"] });
+
+        if (!boat) {
+            throw new EntityNotFoundException&lt;Boat>(Boat);
+        }
+
+        const boatRentals = boat.rentals.map((rental) => rental);
+
+        if (! await this.checkIfValidRentalDate(rentalData, boatRentals)) {
+            throw new ForbiddenActionException("Duplicate date");
+        }
+
+        const rentalPrice: number = boat.pricePerDay * (this.getDaysFromPostgresInterval(rentalData.durationInDays) + 1);
+
+        const createdRental = await this.repository.create({
+            ...rentalData,
+            renter: user,
+            boat: boat,
+            pricePaid: rentalPrice,
+        })
+        await this.repository.save(createdRental);
+
+        return await this.repository.findOne(createdRental.id);
+    }
+
+    
+    /**
+     * Checks whether rentalData's data range overlaps with any of the given elements in rentals array.
+     *
+     * @private
+     * @param {CreateRentalDTO} rentalData
+     * @param {Rental[]} rentals
+     * @return {*}  {Promise&lt;boolean>}
+     * @memberof RentalService
+     */
+    private async checkIfValidRentalDate(rentalData: CreateRentalDTO, rentals: Rental[]): Promise&lt;boolean> {
+        //2020-12-01 P3W -> locked until 2020-12-04 (not incl)
+        let isValid = true;
+        const date: Date = new Date(rentalData.startDate);
+        const dateFilter = this.filterByDateInterval(date);
+
+        const endDate: Date = new Date(date);
+        endDate.setDate(date.getDate() + this.getDaysFromPostgresInterval(rentalData.durationInDays));
+
+        const rental = await this.repository.findOne({
+            where: {
+                boat: rentalData.boatId,
+                startDate: Between(date, endDate)
+            }
+        });
+
+        isValid = rental === undefined &amp;&amp; rentals.filter(dateFilter).length === 0;
+
+        return isValid;
+    }
+
+    /**
+     * Parses a PostgreInterval time interval into duration in days
+     *
+     * @private
+     * @param {string} interval
+     * @return {*}  {number}
+     * @memberof RentalService
+     */
+    private getDaysFromPostgresInterval(interval: string): number {
+        const daysEndIdx: number = interval.indexOf('D');
+        let daysStartIdx: number = 1;
+
+        for (let i = daysEndIdx - 1; i > 0; i--) {
+            if (interval.charAt(i) === 'W' || interval.charAt(i) === 'M' || interval.charAt(i) === 'Y') {
+                daysStartIdx = i + 1;
+            }
+        }
+
+        return Number(interval.substring(daysStartIdx, daysEndIdx));
+    }
+
+    private filterByDateInterval = (date: Date) => (r: Rental): boolean => {
+        const from = new Date(r.startDate);
+        const to = new Date(r.startDate);
+        to.setDate(from.getDate() + Number((r.durationInDays as PostgresTimeInterval).days));
+        return date > from &amp;&amp; date &lt; to;
+    }
+}
+
+export default RentalService;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

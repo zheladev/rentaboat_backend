@@ -4,6 +4,7 @@ import { ObjectLiteral, Repository } from "typeorm";
 export /**
  * Helper that returns a curried function that expects a SinonStubbedInstance
  *
+ * @category Utils
  * @param {SinonStub} stub
  * @return {*} 
  */

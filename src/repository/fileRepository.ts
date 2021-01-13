@@ -12,6 +12,7 @@ enum acceptedFileTypes {
 export /**
  * Returns curried helper functions to interact with the local storage
  *
+ * @category Utils
  * @param {string} relativePath
  * @return {*} 
  */

@@ -6,6 +6,7 @@ import { IDTO } from "../interfaces/DTO";
 /**
  * Abstract BaseService class services should inherit from
  *
+ * @category Services
  * @class BaseService
  * @template T
  */

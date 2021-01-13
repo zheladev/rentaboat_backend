@@ -2,6 +2,7 @@
  * Returns enum key based on a value
  *
  * @export
+ * @category Utils
  * @template T
  * @param {T} myEnum
  * @param {string} enumValue

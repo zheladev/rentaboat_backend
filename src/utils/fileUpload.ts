@@ -3,6 +3,7 @@ import { IFile } from "../interfaces/file";
 export /**
  * Parses a base64 file data into IFile object
  *
+ * @category Utils
  * @param {string} base64Data
  * @return {*}  {IFile}
  */

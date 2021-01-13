@@ -10,6 +10,7 @@ import BaseService from "./baseService";
 /**
  * Rental service
  *
+ * @category Services
  * @class RentalService
  * @extends {BaseService<Rental>}
  */

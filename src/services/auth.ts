@@ -19,6 +19,7 @@ import WrongFileTypeException from "../exceptions/WrongFileTypeException";
 /**
  * Authentication service
  *
+ * @category Services
  * @class AuthenticationService
  * @extends {BaseService<User>}
  */

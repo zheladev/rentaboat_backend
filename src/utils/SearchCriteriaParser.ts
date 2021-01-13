@@ -14,6 +14,7 @@ export const searchCriteriaOperationToTypeORMOperator = {
 export /**
  * Reduces ISearchCriteria array into TypeORM Entity data
  *
+ * @category Utils
  * @param {ISearchCriteria[]} sca
  * @return {*} 
  */
@@ -29,6 +30,7 @@ const parseSearchCriteriaToTypeORMWhereClause = (sca: ISearchCriteria[]) => {
 export /**
  * Parses search query string into ISearchCriteria array
  *
+ * @category Utils
  * @param {string} rawStr
  * @return {*}  {ISearchCriteria[]}
  */

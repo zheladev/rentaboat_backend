@@ -12,6 +12,7 @@ import BaseService from "./baseService";
  * SupportTicket service
  *
  * @class SupportTicketService
+ * @category Services
  * @extends {BaseService<SupportTicket>}
  */
 class SupportTicketService extends BaseService<SupportTicket> {
