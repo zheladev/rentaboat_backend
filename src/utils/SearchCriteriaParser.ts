@@ -11,7 +11,13 @@ export const searchCriteriaOperationToTypeORMOperator = {
     [SearchCriteriaOperations.GreaterThanOrEqualTo]: MoreThanOrEqual,
 }
 
-export const parseSearchCriteriaToTypeORMWhereClause = (sca: ISearchCriteria[]) => {
+export /**
+ * Reduces ISearchCriteria array into TypeORM Entity data
+ *
+ * @param {ISearchCriteria[]} sca
+ * @return {*} 
+ */
+const parseSearchCriteriaToTypeORMWhereClause = (sca: ISearchCriteria[]) => {
     const typeORMWhereClause = sca.reduce((obj, sc) => {
         obj[sc.key] = searchCriteriaOperationToTypeORMOperator[sc.operation](sc.value);
         return obj;
@@ -20,7 +26,13 @@ export const parseSearchCriteriaToTypeORMWhereClause = (sca: ISearchCriteria[]) 
     return typeORMWhereClause;
 }
 
-export const parseSearchCriteriaStr = (rawStr: string) => {
+export /**
+ * Parses search query string into ISearchCriteria array
+ *
+ * @param {string} rawStr
+ * @return {*}  {ISearchCriteria[]}
+ */
+const parseSearchCriteriaStr = (rawStr: string): ISearchCriteria[] => {
     const regex: RegExp = /(\w+?)(:|<>|>:|<:|<|>)([\w'-_\ ]+?|[0-9]+?),/g;
     const searchCriteriaStrArr: RegExpMatchArray[] = [...rawStr.matchAll(regex)];
     const searchCriteriaArr: ISearchCriteria[] = searchCriteriaStrArr.map(sc => {

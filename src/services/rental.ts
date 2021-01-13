@@ -7,22 +7,46 @@ import EntityNotFoundException from "../exceptions/EntityNotFoundException";
 import ForbiddenActionException from "../exceptions/ForbiddenActionException";
 import BaseService from "./baseService";
 
+/**
+ * Rental service
+ *
+ * @class RentalService
+ * @extends {BaseService<Rental>}
+ */
 class RentalService extends BaseService<Rental> {
     private boatRepository = getRepository(Boat);
     constructor() {
         super(Rental)
     }
 
+
+    /**
+     * Returns array of rentals of a boat with given id
+     *
+     * @param {string} boatId
+     * @return {*} 
+     * @memberof RentalService
+     */
     public async getByBoatId(boatId: string) {
         const rentals = await this.repository.find({ where: { boat: boatId }, relations: ["renter"] });
 
         return rentals;
     }
 
+    /**
+     * Returns rentals of boat with matching user id
+     *
+     * @param {string} userId
+     * @param {User} user
+     * @return {*} 
+     * @memberof RentalService
+     */
     public async getByOwnerId(userId: string, user: User) {
         if (!(userId === user.id || user.userType.intValue <= 1)) {
             throw new ForbiddenActionException("Access owner rentals");
         }
+
+        //TODO: not sanitized
         const rentals = await this.repository
             .createQueryBuilder('rental')
             .leftJoinAndSelect('rental.boat', 'boat')
@@ -34,6 +58,16 @@ class RentalService extends BaseService<Rental> {
         return rentals;
     }
 
+
+    /**
+     * Returns rentals made by matching user
+     *
+     * @param {string} userId
+     * @param {User} user
+     * @param {boolean} [upcoming=true]
+     * @return {*} 
+     * @memberof RentalService
+     */
     public async getByUserId(userId: string, user: User, upcoming: boolean = true) {
         if (!(userId === user.id || user.userType.intValue <= 1)) {
             throw new ForbiddenActionException("Access renter rentals");
@@ -50,6 +84,14 @@ class RentalService extends BaseService<Rental> {
         return rentals;
     }
 
+    /**
+     * Creates and returns rental with given data
+     *
+     * @param {CreateRentalDTO} rentalData
+     * @param {User} user
+     * @return {*} 
+     * @memberof RentalService
+     */
     public async create(rentalData: CreateRentalDTO, user: User) {
         const { boatId } = rentalData;
 
@@ -78,8 +120,18 @@ class RentalService extends BaseService<Rental> {
         return await this.repository.findOne(createdRental.id);
     }
 
-    //2020-12-01 P3W -> locked until 2020-12-04 (not incl)
+    
+    /**
+     * Checks whether rentalData's data range overlaps with any of the given elements in rentals array.
+     *
+     * @private
+     * @param {CreateRentalDTO} rentalData
+     * @param {Rental[]} rentals
+     * @return {*}  {Promise<boolean>}
+     * @memberof RentalService
+     */
     private async checkIfValidRentalDate(rentalData: CreateRentalDTO, rentals: Rental[]): Promise<boolean> {
+        //2020-12-01 P3W -> locked until 2020-12-04 (not incl)
         let isValid = true;
         const date: Date = new Date(rentalData.startDate);
         const dateFilter = this.filterByDateInterval(date);
@@ -99,7 +151,15 @@ class RentalService extends BaseService<Rental> {
         return isValid;
     }
 
-    private getDaysFromPostgresInterval(interval: string) {
+    /**
+     * Parses a PostgreInterval time interval into duration in days
+     *
+     * @private
+     * @param {string} interval
+     * @return {*}  {number}
+     * @memberof RentalService
+     */
+    private getDaysFromPostgresInterval(interval: string): number {
         const daysEndIdx: number = interval.indexOf('D');
         let daysStartIdx: number = 1;
 

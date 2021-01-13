@@ -16,6 +16,12 @@ import { getFileRepository } from "../repository/fileRepository";
 import WrongFileTypeException from "../exceptions/WrongFileTypeException";
 
 
+/**
+ * Authentication service
+ *
+ * @class AuthenticationService
+ * @extends {BaseService<User>}
+ */
 class AuthenticationService extends BaseService<User> {
     private userTypeRepository = getRepository(UserType);
     private fileRepository = getFileRepository(process.env.USER_IMG_DIR)
@@ -24,6 +30,13 @@ class AuthenticationService extends BaseService<User> {
         super(User);
     }
 
+    /**
+     *
+     *
+     * @param {LoginDto} {username, password}
+     * @return {*}  {Promise<{token: TokenData, user: User}>}
+     * @memberof AuthenticationService
+     */
     public async logIn( {username, password}: LoginDto): Promise<{token: TokenData, user: User}> {
         const user = await this.validateLoginData(username, password);
         const tokenData = this.createToken(user);
@@ -33,6 +46,13 @@ class AuthenticationService extends BaseService<User> {
         }
     }
 
+    /**
+     * Creates User with given data and returns said User and its access token
+     *
+     * @param {RegisterDto} userData
+     * @return {*}  {Promise<{token: TokenData, user: User}>}
+     * @memberof AuthenticationService
+     */
     public async register(userData: RegisterDto): Promise<{token: TokenData, user: User}> {
         try {
             const base64Data = userData.base64Data || undefined;
@@ -78,6 +98,15 @@ class AuthenticationService extends BaseService<User> {
         }
     }
 
+    /**
+     * Validates given login data and returns matched User if login is successful
+     *
+     * @private
+     * @param {string} username
+     * @param {string} password
+     * @return {*} 
+     * @memberof AuthenticationService
+     */
     private async validateLoginData(username: string, password: string) {
         if(!(username && password)) {
             throw new MissingParametersException();
@@ -104,6 +133,14 @@ class AuthenticationService extends BaseService<User> {
         return user;
     }
 
+    /**
+     * Validates RegisterDto
+     *
+     * @private
+     * @param {RegisterDto} userData
+     * @param {UserType} userType
+     * @memberof AuthenticationService
+     */
     private async validateRegistrationData(userData: RegisterDto, userType: UserType) {       
         if (!userType || !userType.isRegistrable) {
             throw new ForbiddenActionException("Register non registrable user.");
@@ -118,8 +155,16 @@ class AuthenticationService extends BaseService<User> {
         }
     }
 
-    private createToken(user: User): TokenData {
-        const expiresIn = 60 * 60 * 24; // 1 day
+    /**
+     * Returns signed JWT token for given User and expirationTime pair.
+     *
+     * @private
+     * @param {User} user
+     * @param {number} [expiresIn=60 * 60 * 24] Time until token expiration
+     * @return {*}  {TokenData}
+     * @memberof AuthenticationService
+     */
+    private createToken(user: User, expiresIn: number = 60 * 60 * 24): TokenData {
         const secret = process.env.JWT_SECRET;
         const dataStoredInToken: DataStoredInToken = {
           id: user.id,

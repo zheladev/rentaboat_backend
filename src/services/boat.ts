@@ -18,9 +18,16 @@ import { parseSearchCriteriaToTypeORMWhereClause } from "../utils/SearchCriteria
 import BaseService from "./baseService";
 import { getFileRepository } from "../repository/fileRepository";
 import WrongFileTypeException from "../exceptions/WrongFileTypeException";
+import { IPaginatedResult } from "../interfaces/paginatedResult";
 
 type BoatFKs = { shipyard: string, boatType: string, port: string };
 
+/**
+ * Boat service
+ *
+ * @class BoatService
+ * @extends {BaseService<Boat>}
+ */
 class BoatService extends BaseService<Boat> {
     private shipyardRepository = getRepository(Shipyard);
     private portRepository = getRepository(Port);
@@ -33,7 +40,18 @@ class BoatService extends BaseService<Boat> {
         super(Boat);
     }
 
-    public async getAllPaginated(skip: number = 0, take: number = 40, startDate = null, endDate = null, searchParams: ISearchCriteria[] = []) {
+    /**
+     * Returns paginated Boat array with matching params and specified pagination
+     *
+     * @param {number} [skip=0]
+     * @param {number} [take=40]
+     * @param {*} [startDate=null]
+     * @param {*} [endDate=null]
+     * @param {ISearchCriteria[]} [searchParams=[]]
+     * @return {*} 
+     * @memberof BoatService
+     */
+    public async getAllPaginated(skip: number = 0, take: number = 40, startDate = null, endDate = null, searchParams: ISearchCriteria[] = []): Promise<IPaginatedResult<Boat>> {
         const relationsOptions = {
             relations: [
                 "user",
@@ -95,6 +113,15 @@ class BoatService extends BaseService<Boat> {
         };
     }
 
+    /**
+     * Returns functions that accepts a Boat and returns whether its rental dates overlap with given date range
+     *
+     * @private
+     * @param {*} startDate
+     * @param {*} endDate
+     * @return {*} 
+     * @memberof BoatService
+     */
     private boatAvailabilityFilter(startDate, endDate) {
         return (boat: Boat) => {
             let isRented = false;
@@ -111,6 +138,15 @@ class BoatService extends BaseService<Boat> {
         }
     }
 
+    /**
+     * Updates matched Boat with given params if Boat belongs to User
+     *
+     * @param {string} id
+     * @param {Partial<CreateBoatDto>} boatData
+     * @param {User} user
+     * @return {*} 
+     * @memberof BoatService
+     */
     public async updateWithUser(id: string, boatData: Partial<CreateBoatDto>, user: User) {
         const boat = await this.repository.findOne({ id: id }, { relations: ["user"] });
 
@@ -126,6 +162,14 @@ class BoatService extends BaseService<Boat> {
         return await this.repository.findOne(id, { relations: ["user", "port", "shipyard", "boatType", "ratings", "comments", "rentals", "rentals.renter"] });
     }
 
+    /**
+     * Creates and returns Boat with given params and User.
+     *
+     * @param {CreateBoatDto} boatData
+     * @param {User} user
+     * @return {*} 
+     * @memberof BoatService
+     */
     public async create(boatData: CreateBoatDto, user: User) {
         const { shipyard, boatType, port }: BoatFKs = boatData;
         const base64Data = boatData.base64Data || undefined;
@@ -146,9 +190,6 @@ class BoatService extends BaseService<Boat> {
         if (!(boatTypeEntity && portEntity)) {
             throw new MissingParametersException();
         }
-
-        
-        
 
         const createdBoat = await this.repository.create({
             ...boatData,
@@ -179,6 +220,12 @@ class BoatService extends BaseService<Boat> {
         return await savedBoat;
     }
 
+    /**
+     * Sets mached Boat's isDeleted param to true
+     *
+     * @param {string} id
+     * @memberof BoatService
+     */
     public async delete(id: string) {
         if (!await this.repository.findOne(id)) {
             throw new EntityNotFoundException<Boat>(Boat);
@@ -195,6 +242,13 @@ class BoatService extends BaseService<Boat> {
         return boat;
     }
 
+    /**
+     * Returns Boat belonging to mached User
+     *
+     * @param {string} userId
+     * @return {*} 
+     * @memberof BoatService
+     */
     public async getByUserId(userId: string) {
         const entity = await this.repository.find({ where: { user: userId }, relations: ["user", "port", "shipyard", "boatType", "ratings", "comments", "rentals", "rentals.renter"], order: { createdAt: "ASC" } });
         if (!entity) {
@@ -203,6 +257,15 @@ class BoatService extends BaseService<Boat> {
         return entity;
     }
 
+    /**
+     * Adds new Comment with given data to matched Boat
+     *
+     * @param {string} boatId
+     * @param {PostCommentDTO} commentData
+     * @param {User} user
+     * @return {*} 
+     * @memberof BoatService
+     */
     public async postComment(boatId: string, commentData: PostCommentDTO, user: User) {
         const boat = await this.repository.findOne(boatId);
 
@@ -220,6 +283,15 @@ class BoatService extends BaseService<Boat> {
         return this.commentRepository.findOne(createdComment.id);
     }
 
+    /**
+     * Adds new Rating with given data to matched Boat
+     *
+     * @param {string} boatId
+     * @param {PostRatingDTO} ratingData
+     * @param {User} user
+     * @return {*} 
+     * @memberof BoatService
+     */
     public async postRating(boatId: string, ratingData: PostRatingDTO, user: User) {
         const boat = await this.repository.findOne(boatId);
 
@@ -237,6 +309,14 @@ class BoatService extends BaseService<Boat> {
         return this.ratingRepository.findOne(createdRating.id);
     }
 
+    /**
+     * Creates and returns Shipyard with given name
+     *
+     * @private
+     * @param {string} shipyard
+     * @return {*} 
+     * @memberof BoatService
+     */
     private async getShipyardEntity(shipyard: string) {
         let shipyardEntity = await this.shipyardRepository.findOne({ name: shipyard });
 

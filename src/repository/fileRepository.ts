@@ -9,7 +9,13 @@ enum acceptedFileTypes {
     SVG = 'svg'
 }
 
-export const getFileRepository = (relativePath: string) => {
+export /**
+ * Returns curried helper functions to interact with the local storage
+ *
+ * @param {string} relativePath
+ * @return {*} 
+ */
+const getFileRepository = (relativePath: string) => {
     return {
         save: (filename: string, base64Data: string, opts = {}) => {
             const baseDir = process.env.BASE_IMG_DIR;

@@ -9,6 +9,12 @@ import ForbiddenActionException from "../exceptions/ForbiddenActionException";
 import BaseService from "./baseService";
 
 
+/**
+ * Chat service
+ *
+ * @class ChatService
+ * @extends {BaseService<Chat>}
+ */
 class ChatService extends BaseService<Chat> {
     private messageRepository: Repository<Message> = getRepository(Message);
     private userRepository: Repository<User> = getRepository(User);
@@ -17,6 +23,14 @@ class ChatService extends BaseService<Chat> {
         super(Chat)
     };
 
+    /**
+     * Creates Chat with given data
+     *
+     * @param {CreateChatDTO} chatData
+     * @param {User} user
+     * @return {*}  {Promise<Chat>}
+     * @memberof ChatService
+     */
     public async create(chatData: CreateChatDTO, user: User): Promise<Chat> {
         const receiver = await this.userRepository.findOne(chatData.receiverId);
 
@@ -33,6 +47,13 @@ class ChatService extends BaseService<Chat> {
         return await this.repository.findOne(createdChat.id, {relations: ["creator", "receiver"]});
     }
 
+    /**
+     * Returns array of messages belonging to matched Chat
+     *
+     * @param {string} chatId
+     * @return {*}  {Promise<Message[]>}
+     * @memberof ChatService
+     */
     public async getMessagesById(chatId: string): Promise<Message[]> {
         const messages = await this.messageRepository.find({
             where: {
@@ -43,6 +64,15 @@ class ChatService extends BaseService<Chat> {
         return messages;
     }
 
+    /**
+     * Posts message as given User on matched Chat
+     *
+     * @param {string} chatId
+     * @param {PostMessageDTO} message
+     * @param {User} user
+     * @return {*}  {Promise<Message>}
+     * @memberof ChatService
+     */
     public async postMessage(chatId: string, message: PostMessageDTO, user: User): Promise<Message> {
         const chat = await this.repository.findOne(chatId, { relations: ["creator", "receiver"]});
 

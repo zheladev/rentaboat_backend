@@ -1,6 +1,12 @@
 import { SinonStub, SinonStubbedInstance } from "sinon";
 import { ObjectLiteral, Repository } from "typeorm";
 
-export const repositoryStubConstructor = (stub: SinonStub) => {
-    return (repository: SinonStubbedInstance<Repository<ObjectLiteral>>) => stub.returns(repository as unknown as any);
+export /**
+ * Helper that returns a curried function that expects a SinonStubbedInstance
+ *
+ * @param {SinonStub} stub
+ * @return {*} 
+ */
+const repositoryStubConstructor = (stub: SinonStub): Function => {
+    return (repository: SinonStubbedInstance<Repository<ObjectLiteral>>): SinonStub<any[], any> => stub.returns(repository as unknown as any);
 }

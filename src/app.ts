@@ -20,6 +20,11 @@ const corsOptions: cors.CorsOptions = {
     preflightContinue: false,
   };
 
+/**
+ *
+ *
+ * @class App
+ */
 class App {
     public app: express.Application;
     public port: number;
@@ -36,10 +41,21 @@ class App {
          //expose public folder
     }
 
+    /**
+     * Enables CORS on the server.
+     *
+     * @memberof App
+     */
     enableCORS() {
         this.app.use(cors(corsOptions));
     }
 
+    /**
+     * Initializes app with given controllers
+     *
+     * @param {Array<Controller>} controllers
+     * @memberof App
+     */
     initializeControllers(controllers: Array<Controller>) {
         controllers.forEach((controller) => {
             this.app.use('/', controller.router);
@@ -47,16 +63,33 @@ class App {
     }
 
 
+    /**
+     * Uses given middlewares on app
+     *
+     * @param {Array<any>} middlewares
+     * @memberof App
+     */
     initializeMiddlewares(middlewares: Array<any>) {
         middlewares.forEach((middleware) => {
             this.app.use(middleware);
         })
     }
 
-    initializeErrorHandling() {
+    /**
+     *
+     *
+     * @private
+     * @memberof App
+     */
+    private initializeErrorHandling() {
         this.app.use(errorMiddleware);
     }
 
+    /**
+     * Starts the app and serves it
+     *
+     * @memberof App
+     */
     public listen() {
         this.app.listen(this.port, () => {
             console.log(`App listening on ${this.port}`)

@@ -8,6 +8,12 @@ import EntityNotFoundException from "../exceptions/EntityNotFoundException";
 import ForbiddenActionException from "../exceptions/ForbiddenActionException";
 import BaseService from "./baseService";
 
+/**
+ * SupportTicket service
+ *
+ * @class SupportTicketService
+ * @extends {BaseService<SupportTicket>}
+ */
 class SupportTicketService extends BaseService<SupportTicket> {
     private rentalRepository = getRepository(Rental);
     private supportTicketTypeRepository = getRepository(SupportTicketType);
@@ -16,6 +22,14 @@ class SupportTicketService extends BaseService<SupportTicket> {
         super(SupportTicket)
     }
 
+    /**
+     *  Returns created SupportTicket linked to given User
+     *
+     * @param {CreateSupportTicketDTO} supportTicketData
+     * @param {User} user
+     * @return {*} 
+     * @memberof SupportTicketService
+     */
     public async create(supportTicketData: CreateSupportTicketDTO, user: User) {
         const rental = await this.rentalRepository.findOne(supportTicketData.rental);
         if (!rental) {
@@ -44,6 +58,13 @@ class SupportTicketService extends BaseService<SupportTicket> {
         return this.repository.findOne(createdSupportTicket.id, { relations: ["issuer", "supportTicketType", "rental"] })
     }
 
+    /**
+     * Sets matched SupportTicket's isResolved param to true
+     *
+     * @param {string} id
+     * @return {*} 
+     * @memberof SupportTicketService
+     */
     public async resolveTicket(id: string) {
         const supportTicket = await this.repository.findOne(id);
         if (!supportTicket) {
@@ -56,6 +77,14 @@ class SupportTicketService extends BaseService<SupportTicket> {
         return supportTicket;
     }
 
+    /**
+     * Assigns Support user to matched SupportTicket
+     *
+     * @param {string} id
+     * @param {User} user
+     * @return {*} 
+     * @memberof SupportTicketService
+     */
     public async assignSupportUser(id: string, user: User) {
         if (user.userType.intValue > 1) {
             throw new ForbiddenActionException("Assign support ticket.");
