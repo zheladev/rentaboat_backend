@@ -1,5 +1,6 @@
+import { IDTO } from "../interfaces/DTO";
 
-class CreateBillingInformationDTO {
+class CreateBillingInformationDTO implements IDTO {
 
     public address: string;
     

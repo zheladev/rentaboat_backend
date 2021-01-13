@@ -1,6 +1,7 @@
 import { IsString } from "class-validator";
+import { IDTO } from "../interfaces/DTO";
 
-class PostCommentDTO {
+class PostCommentDTO implements IDTO {
     @IsString()
     public comment: string;
 }

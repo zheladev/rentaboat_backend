@@ -1,6 +1,7 @@
 import { IsString } from "class-validator";
+import { IDTO } from "../interfaces/DTO";
 
-class CreateSupportTicketDTO {
+class CreateSupportTicketDTO implements IDTO {
 
     @IsString()
     public supportTicketType: string;

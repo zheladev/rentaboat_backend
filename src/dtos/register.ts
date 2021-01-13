@@ -1,6 +1,7 @@
 import { IsEmail, IsString } from "class-validator";
+import { IDTO } from "../interfaces/DTO";
 
-class RegisterDto {
+class RegisterDto implements IDTO {
     @IsString()
     public userType: number;
 

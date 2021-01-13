@@ -1,6 +1,7 @@
 import { IsString } from "class-validator";
+import { IDTO } from "../interfaces/DTO";
 
-class CreateChatDTO {
+class CreateChatDTO implements IDTO {
 
     @IsString()
     public receiverId: string;

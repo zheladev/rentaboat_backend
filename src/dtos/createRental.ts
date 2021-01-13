@@ -1,6 +1,7 @@
 import { IsDate, IsString } from "class-validator";
+import { IDTO } from "../interfaces/DTO";
 
-class CreateRentalDTO {
+class CreateRentalDTO implements IDTO {
     @IsDate()
     public startDate: Date;
 

@@ -1,6 +1,7 @@
 import { IsString } from "class-validator";
+import { IDTO } from "../interfaces/DTO";
 
-class CreateShipyardDTO {
+class CreateShipyardDTO implements IDTO {
     @IsString()
     public name: string;
 }

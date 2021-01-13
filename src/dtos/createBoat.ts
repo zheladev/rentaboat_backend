@@ -1,7 +1,8 @@
 import { IsNumber, IsString } from "class-validator";
+import { IDTO } from "../interfaces/DTO";
 
 
-class CreateBoatDto {
+class CreateBoatDto implements IDTO {
     @IsString()
     public shipyard;
 

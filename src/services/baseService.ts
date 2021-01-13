@@ -1,19 +1,56 @@
 import { getRepository, Repository } from "typeorm";
 import EntityNotFoundException from "../exceptions/EntityNotFoundException";
+import { IDTO } from "../interfaces/DTO";
 
 
-class BaseService<T> {
+/**
+ * Base service.
+ *
+ * @class BaseService
+ * @template T
+ */
+abstract class BaseService<T> {
     protected repository: Repository<T>;
     private dataObjectClass: { new(): T };
     constructor(entityClass : { new(): T }) {
         this.repository = getRepository(entityClass);
     }
 
-    public async getAll(skip: number = 0, take: number = 40) {
-        return await this.repository.find({ skip: skip, take: take});
+    /**
+     * Creates entity with given data
+     *
+     * @param {IDTO} model
+     * @return {*}  {Promise<T>}
+     * @memberof BaseService
+     */
+    public async _create(model: IDTO): Promise<T> {
+        const e: T = await this.repository.save({
+            ...model
+        });
+        await this.repository.save(e);
+        return e;
     }
 
-    public async getById(id: string) {
+    /**
+     *  Returns array containing entities
+     *
+     * @param {number} [skip=0]
+     * @param {number} [take=40]
+     * @return {*}  {Promise<Array<T>>}
+     * @memberof BaseService
+     */
+    public async getAll(skip: number = 0, take: number = null): Promise<Array<T>> {
+        return await take ? this.repository.find({ skip: skip, take: take}) : this.repository.find({ skip: skip });
+    }
+
+    /**
+     * Returns matched entity
+     *
+     * @param {string} id
+     * @return {*} 
+     * @memberof BaseService
+     */
+    public async getById(id: string): Promise<T> {
         const entity = await this.repository.findOne(id);
         if (!entity) {
             throw new EntityNotFoundException<T>(this.dataObjectClass);
@@ -21,7 +58,15 @@ class BaseService<T> {
         return entity;
     }
 
-    public async update(id, entityData: Partial<T>) {
+    /**
+     * Updates matched entity with given data
+     *
+     * @param {string} id
+     * @param {Partial<T>} entityData
+     * @return {*}  {Promise<T>}
+     * @memberof BaseService
+     */
+    public async update(id: string, entityData: Partial<T>): Promise<T> {
         const entity = await this.repository.findOne(id);
         if (!entity) {
             throw new EntityNotFoundException<T>(this.dataObjectClass);
@@ -35,8 +80,14 @@ class BaseService<T> {
         return await this.repository.findOne(id);
     }
 
-    //deletes from database, override if logs needed
-    public async delete(id) {
+    
+    /**
+     * Deletes matched entity
+     *
+     * @param {string} id
+     * @memberof BaseService
+     */
+    public async delete(id: string) {
         if (!await this.repository.findOne(id)) {
             throw new EntityNotFoundException<T>(this.dataObjectClass);
         }
