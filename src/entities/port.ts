@@ -10,7 +10,11 @@ class Port {
     @Column()
     public name: string;
 
-    @Column("point")
+    @Column({
+        type: 'geometry',
+        nullable: true,
+        spatialFeatureType: 'Point'
+    })
     public coordinates: Point;
 
     @OneToMany(() => Boat, boat => boat.port)
