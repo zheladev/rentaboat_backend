@@ -24,16 +24,16 @@ const USERS = [
         username: "user1",
         email: "user1@rentaboat.com",
         password: "user1",
-        firstName: "user1",
-        lastName: "user1",
+        firstName: "John",
+        lastName: "Doe",
         address: "addressuser1",
         userType: 'user'
     },
     {
         username: "user2",
         email: "user2@rentaboat.com",
-        password: "user2",
-        firstName: "user2",
+        password: "Dude",
+        firstName: "Dudelastname",
         lastName: "user2",
         address: "addressuser2",
         userType: 'user'
@@ -41,8 +41,8 @@ const USERS = [
     {
         username: "owner1",
         email: "owner1@rentaboat.com",
-        password: "owner1",
-        firstName: "owner1",
+        password: "Rich",
+        firstName: "Asf Man",
         lastName: "owner1",
         address: "addressowner1",
         userType: 'owner'
@@ -50,8 +50,8 @@ const USERS = [
     {
         username: "owner2",
         email: "owner2@rentaboat.com",
-        password: "owner2",
-        firstName: "owner2",
+        password: "Amadeo",
+        firstName: "García Campos",
         lastName: "owner2",
         address: "addressowner2",
         userType: 'owner'
@@ -289,5 +289,5 @@ const BOATS = [...Array.from(Array(99).keys()).map(n => {
     await saveToDb(boatsToBeInserted, boatRepo);
     console.log('test boats created.');
 
-    
+
 })();
