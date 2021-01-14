@@ -226,7 +226,7 @@ const BOATS = [...Array.from(Array(99).keys()).map(n => {
 
     const userTypeRepo = getRepository(UserType);
     const boatTypeRepo = getRepository(BoatType);
-    const supportTicketRepo = getRepository(SupportTicketType);
+    const supportTicketTypeRepo = getRepository(SupportTicketType);
     const portRepo = getRepository(Port);
     const userRepo = getRepository(User);
     const boatRepo = getRepository(Boat);
@@ -241,7 +241,7 @@ const BOATS = [...Array.from(Array(99).keys()).map(n => {
     console.log('boat types table populated.');
 
     console.log('populating support ticket types...');
-    await saveToDb(SUPPORT_TICKET_TYPES, supportTicketRepo);
+    await saveToDb(SUPPORT_TICKET_TYPES, supportTicketTypeRepo);
     console.log('support ticket types table populated.');
 
     console.log('populating ports...');
