@@ -10,7 +10,7 @@ import SupportTicketService from "../services/supportTicket";
 
 
 class SupportTicketController implements Controller {
-    public path = "supportTickets";
+    public path = "support-tickets";
     public router = Router();
     public supportTicketService = new SupportTicketService();
 

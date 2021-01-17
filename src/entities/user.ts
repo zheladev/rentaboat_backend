@@ -47,7 +47,7 @@ class User {
     @Column({nullable: false, select: false})
     public password: string;
 
-    @Column({ name: "file_path", default: '/avatars/default.svg'})
+    @Column({ name: "file_path", default: '/img/avatars/default.svg'})
     public path: string;
 
     @CreateDateColumn({

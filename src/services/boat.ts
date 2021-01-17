@@ -235,7 +235,7 @@ class BoatService extends BaseService<Boat> {
     }
 
     public async getById(id: string) {
-        const boat = await this.repository.findOne(id, { relations: ["user", "shipyard", "boatType", "ratings", "comments"] });
+        const boat = await this.repository.findOne(id, { relations: ["user", "shipyard", "boatType", "ratings", "ratings.user", "comments", "comments.user"] });
         if (!boat) {
             throw new EntityNotFoundException<Boat>(Boat);
         }

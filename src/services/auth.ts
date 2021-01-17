@@ -59,7 +59,7 @@ class AuthenticationService extends BaseService<User> {
             const base64Data = userData.base64Data || undefined;
             delete userData.base64Data;
 
-            if(!this.fileRepository.validFileType(base64Data)) {
+            if(base64Data && !this.fileRepository.validFileType(base64Data)) {
                 throw new WrongFileTypeException(this.fileRepository.fileType(base64Data));
             }
             

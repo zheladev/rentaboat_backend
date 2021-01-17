@@ -8,7 +8,7 @@ import ShipyardService from "../services/shipyard";
 
 
 class ShipyardController implements Controller {
-    public path = "shipyards";
+    public path = "/shipyards";
     public router = Router();
     public shipyardService = new ShipyardService();
 
@@ -19,7 +19,7 @@ class ShipyardController implements Controller {
     private initializeRoutes() {
         this.router.get(this.path, this.getAllShipyards);
         this.router.get(`${this.path}/:id`, validateUUID, this.getShipyardById);
-        this.router.post(`${this.path}`, authMiddleware, this.createShipyard);
+        this.router.post(this.path, authMiddleware, this.createShipyard);
         this.router.all(`${this.path}/*`, authMiddleware)
             .patch(`${this.path}/:id`, validateUUID, this.modifyShipyard)
             .delete(`${this.path}/:id`, validateUUID, this.deleteShipyard)
