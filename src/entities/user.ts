@@ -48,7 +48,7 @@ class User {
     public password: string;
 
     @Column({ name: "file_path", default: '/img/avatars/default.svg'})
-    public path: string;
+    public path: string; 
 
     @CreateDateColumn({
         name: "created_at",
