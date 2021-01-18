@@ -14,8 +14,8 @@ const SUPERUSER = {
     username: "admin",
     email: "admin@rentaboat.com",
     password: "root",
-    firstName: "admin",
-    lastName: "admin",
+    firstName: "Billy",
+    lastName: "Herrington",
     address: "address"
 };
 
@@ -24,17 +24,17 @@ const USERS = [
         username: "user1",
         email: "user1@rentaboat.com",
         password: "user1",
-        firstName: "John",
-        lastName: "Doe",
+        firstName: "Van",
+        lastName: "Darkholme",
         address: "addressuser1",
         userType: 'user'
     },
     {
         username: "user2",
         email: "user2@rentaboat.com",
-        password: "Dude",
-        firstName: "Dudelastname",
-        lastName: "user2",
+        password: "user2",
+        firstName: "Danny",
+        lastName: "Lee",
         address: "addressuser2",
         userType: 'user'
     },
@@ -42,17 +42,17 @@ const USERS = [
         username: "owner1",
         email: "owner1@rentaboat.com",
         password: "owner1",
-        firstName: "Rich",
-        lastName: "Asf Uckman",
+        firstName: "Ricardo",
+        lastName: "Milos",
         address: "addressowner1",
         userType: 'owner'
     },
     {
         username: "owner2",
         email: "owner2@rentaboat.com",
-        password: "Amadeo",
-        firstName: "García Campos",
-        lastName: "owner2",
+        password: "owner2",
+        firstName: "Mark",
+        lastName: "Wolff",
         address: "addressowner2",
         userType: 'owner'
     },
