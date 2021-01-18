@@ -41,9 +41,9 @@ const USERS = [
     {
         username: "owner1",
         email: "owner1@rentaboat.com",
-        password: "Rich",
-        firstName: "Asf Man",
-        lastName: "owner1",
+        password: "owner1",
+        firstName: "Rich",
+        lastName: "Asf Uckman",
         address: "addressowner1",
         userType: 'owner'
     },
