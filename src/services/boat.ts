@@ -77,33 +77,51 @@ class BoatService extends BaseService<Boat> {
             if (startDate && endDate) {
                 boats = await this.repository.find({
                     ...relationsOptions,
-                    where: whereParams,
+                    where: {
+                        ...whereParams,
+                        isDeleted: false
+                    }
                 })
                 count = await this.repository.count({
-                    where: whereParams,
+                    where: {
+                        ...whereParams,
+                        isDeleted: false
+                    }
                 })
                 boats = boats.filter(this.boatAvailabilityFilter(startDate, endDate));
             } else {
                 boats = await this.repository.find({
                     ...relationsOptions,
                     ...paginationOptions,
-                    where: whereParams,
+                    where: {
+                        ...whereParams,
+                        isDeleted: false
+                    }
                 })
                 count = await this.repository.count({
-                    where: whereParams,
+                    where: {
+                        ...whereParams,
+                        isDeleted: false
+                    }
                 })
             }
         } else {
             if (startDate && endDate) {
                 boats = await this.repository.find({
                     ...relationsOptions,
+                    where: {
+                        isDeleted: false,
+                    }
                 });
                 count = await this.repository.count();
                 boats = boats.filter(this.boatAvailabilityFilter(startDate, endDate));
             } else {
                 boats = await this.repository.find({
                     ...relationsOptions,
-                    ...paginationOptions
+                    ...paginationOptions,
+                    where: {
+                        isDeleted: false,
+                    }
                 });
                 count = await this.repository.count();
             }
@@ -178,7 +196,7 @@ class BoatService extends BaseService<Boat> {
 
         const lowercaseShipyard = shipyard.toLowerCase();
 
-        if(!this.fileRepository.validFileType(base64Data)) {
+        if (base64Data && !this.fileRepository.validFileType(base64Data)) {
             throw new WrongFileTypeException(this.fileRepository.fileType(base64Data));
         }
 
@@ -235,7 +253,11 @@ class BoatService extends BaseService<Boat> {
     }
 
     public async getById(id: string) {
-        const boat = await this.repository.findOne(id, { relations: ["user", "shipyard", "boatType", "ratings", "ratings.user", "comments", "comments.user"] });
+        const boat = await this.repository.findOne(id, {
+            relations: ["user", "shipyard", "boatType", "ratings", "ratings.user", "comments", "comments.user"], where: {
+                isDeleted: false,
+            }
+        });
         if (!boat) {
             throw new EntityNotFoundException<Boat>(Boat);
         }
@@ -251,7 +273,7 @@ class BoatService extends BaseService<Boat> {
      * @memberof BoatService
      */
     public async getByUserId(userId: string) {
-        const entity = await this.repository.find({ where: { user: userId }, relations: ["user", "port", "shipyard", "boatType", "ratings", "comments", "rentals", "rentals.renter"], order: { createdAt: "ASC" } });
+        const entity = await this.repository.find({ where: { user: userId, isDeleted: false }, relations: ["user", "port", "shipyard", "boatType", "ratings", "comments", "rentals", "rentals.renter"], order: { createdAt: "ASC" } });
         if (!entity) {
             throw new EntityNotFoundException<Boat>(Boat);
         }

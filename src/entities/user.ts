@@ -94,7 +94,9 @@ class User {
 
     @BeforeUpdate()
     async beforeUpdate() {
-        this.password = await bcrypt.hash(this.password, BCRYPT_SALT_ROUNDS);
+        if (this.password) {
+            this.password = await bcrypt.hash(this.password, BCRYPT_SALT_ROUNDS);
+        }
     }
 
     async isValidPassword(password: string) {

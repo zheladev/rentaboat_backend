@@ -37,12 +37,12 @@ export async function authMiddleware(request: RequestWithUser, response: Respons
         //set new jwt token?
         next();
       } else {
-        next(new WrongAuthenticationTokenException());
+        next(new WrongAuthenticationTokenException('No user found for given token.'));
       }
     } catch (error) {
-      next(new WrongAuthenticationTokenException());
+      next(new WrongAuthenticationTokenException(error.message));
     }
   } else {
-    next(new WrongAuthenticationTokenException());
+    next(new WrongAuthenticationTokenException('No bearer token'));
   }
 }

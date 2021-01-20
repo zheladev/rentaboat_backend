@@ -18,18 +18,18 @@ class RentalController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.get(this.path, this.getAllRentals);
         this.router.get(`${this.path}/:id`, validateUUID, this.getRentalById);
         this.router.get(`${this.path}/boat/:id`, validateUUID, this.getRentalsByBoatId);
         this.router.post(`${this.path}`, authMiddleware, this.createRental);
         this.router.all(`${this.path}/*`, authMiddleware)
+            .get(this.path, validateUUID, this.getAllRentals)
             .get(`${this.path}/user/:id`, validateUUID, this.getRentalsByUserId)
             .get(`${this.path}/owner/:id`, validateUUID, this.getRentalsByOwnerId)
             .patch(`${this.path}/:id`, validateUUID, this.modifyRental)
             .delete(`${this.path}/:id`, validateUUID, this.deleteRental);
     }
 
-    private getAllRentals = async (request: Request, response: Response, next: NextFunction) => {
+    private getAllRentals = async (request: RequestWithUser, response: Response, next: NextFunction) => {
         try {
             const rentals = await this.rentalService.getAll();
             response.send(rentals);
